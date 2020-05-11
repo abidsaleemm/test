@@ -17,8 +17,8 @@ import { InputGroup } from "formik-blueprint";
 import PropTypes from "prop-types";
 import { useHistory } from "react-router-dom";
 import * as Yup from "yup";
-import { showToast } from "store/reducers/toast";
-import { signup } from "store/reducers/auth";
+import { showToast } from "store/actions/toast";
+import { signup } from "store/actions/auth";
 import withToast from "hoc/withToast";
 
 const initialValues = {
@@ -158,7 +158,6 @@ function SignUp(props) {
                 component={InputGroup}
                 intent={passwordError ? Intent.DANGER : Intent.NONE}
                 placeholder="Password (required)"
-                type="password"
                 id="password"
                 name="password"
                 rightElement={lockButton}

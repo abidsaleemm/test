@@ -18,8 +18,8 @@ import { useHistory } from "react-router-dom";
 import * as Yup from "yup";
 import { InputGroup } from "formik-blueprint";
 import PropTypes from "prop-types";
-import { showToast } from "store/reducers/toast";
-import { signin } from "store/reducers/auth";
+import { showToast } from "store/actions/toast";
+import { signin } from "store/actions/auth";
 import withToast from "hoc/withToast";
 
 const validateSchema = Yup.object().shape({
@@ -112,7 +112,6 @@ const SignIn = props => {
                   component={InputGroup}
                   intent={passwordError ? Intent.DANGER : Intent.NONE}
                   placeholder="Password (required)"
-                  type="password"
                   id="password"
                   name="password"
                   rightElement={lockButton}

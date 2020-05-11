@@ -2,7 +2,7 @@ import React from "react";
 import { Toast, Position, Toaster } from "@blueprintjs/core";
 import { compose } from "redux";
 import { connect } from "react-redux";
-import { hideToast } from "store/reducers/toast";
+import { hideToast } from "store/actions/toast";
 import { PropTypes } from "prop-types";
 
 function ToastAlert(props) {

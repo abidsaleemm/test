@@ -4,6 +4,8 @@
   "private": true,
   "dependencies": {
     "@blueprintjs/core": "^3.26.1",
+    "@blueprintjs/datetime": "^3.17.0",
+    "@blueprintjs/select": "^3.12.3",
     "@blueprintjs/table": "^3.8.5",
     "@testing-library/jest-dom": "^4.2.4",
     "@testing-library/react": "^9.5.0",
@@ -14,6 +16,7 @@
     "formik-blueprint": "0.0.10",
     "lint-staged": "^10.2.2",
     "lodash-es": "^4.17.15",
+    "moment": "^2.25.3",
     "prop-types": "^15.7.2",
     "query-string": "^6.12.1",
     "react": "^16.13.1",

@@ -7,7 +7,6 @@ import { useSelector } from "react-redux";
 
 const Routes = () => {
   const isAuthenticated = useSelector(state => !!state.auth.token);
-  console.log(isAuthenticated);
 
   return (
     <Switch>

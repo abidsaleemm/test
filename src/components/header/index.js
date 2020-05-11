@@ -3,7 +3,7 @@ import { connect } from "react-redux";
 import { compose } from "redux";
 import classNames from "classnames";
 import { Navbar, Button, Alignment, Classes } from "@blueprintjs/core";
-import { signout } from "store/reducers/auth";
+import { signout } from "store/actions/auth";
 
 const Header = props => {
   const { signout } = props;
