@@ -16,6 +16,7 @@ import { DateInput } from "@blueprintjs/datetime";
 import moment from "moment";
 import { createRecord, getRecords } from "store/actions/record";
 import { showToast } from "store/actions/toast";
+import { DATE_FORMAT } from "constants/index";
 
 const validateSchema = Yup.object().shape({
   note: Yup.string().required("Required"),
@@ -36,7 +37,7 @@ const AddRow = props => {
   const [date, selectDate] = useState(new Date());
 
   const handleSubmit = (values, actions) => {
-    values["date"] = moment(date).format("YYYY/MM/DD");
+    values["date"] = moment(date).format(DATE_FORMAT);
     createRecord({
       body: values,
       success: () => {
@@ -61,12 +62,12 @@ const AddRow = props => {
 
   const jsDateFormatter = {
     formatDate: date => {
-      return moment(date).format("YYYY/MM/DD");
+      return moment(date).format(DATE_FORMAT);
     },
     parseDate: str => {
       return new Date(str);
     },
-    placeholder: "YYYY/MM/DD"
+    placeholder: DATE_FORMAT
   };
 
   return (
@@ -78,7 +79,7 @@ const AddRow = props => {
         icon="add"
         isOpen={isOpen}
         onClose={() => toggleDialog(false)}
-        title="Add Row"
+        title="Add Entry"
       >
         <div className={Classes.DIALOG_BODY}>
           <Formik

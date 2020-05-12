@@ -17,6 +17,8 @@ const style = {
 const getState = ({ currentPage, size, total }) => {
   const totalPages = Math.ceil(total / size);
 
+  console.log(currentPage, size, total);
+
   let startPage, endPage;
   if (totalPages <= 10) {
     startPage = 1;
@@ -38,8 +40,12 @@ const getState = ({ currentPage, size, total }) => {
   );
 
   let correctCurrentpage = currentPage;
-  if (currentPage > totalPages) correctCurrentpage = totalPages;
-  if (currentPage <= 0) correctCurrentpage = 1;
+  if (currentPage > totalPages) {
+    correctCurrentpage = totalPages;
+  }
+  if (currentPage <= 0) {
+    correctCurrentpage = 1;
+  }
 
   return {
     currentPage: correctCurrentpage,
@@ -95,6 +101,7 @@ const Pagination = ({
       count % state.size === 0 &&
       state.currentPage > 1
     ) {
+      console.log("page change: ", state.currentPage);
       dispatch({ type: "PAGE_CHANGE", page: state.currentPage - 1 });
       onPageChange(state.currentPage - 1);
     }

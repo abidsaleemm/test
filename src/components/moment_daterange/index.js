@@ -2,26 +2,27 @@ import React from "react";
 import { Icon, Tag, Classes, Colors } from "@blueprintjs/core";
 import classNames from "classnames";
 import moment from "moment";
+import withColors from "hoc/withColors";
 
 const FORMAT = "dddd, LL";
 const FORMAT_TIME = "dddd, LL LT";
 
-export const MomentDate = ({
+const MomentDate = ({
   date,
   withTime = false,
-  format = withTime ? FORMAT_TIME : FORMAT
+  format = withTime ? FORMAT_TIME : FORMAT,
+  row = -1,
+  intent
 }) => {
   const m = moment(date);
-  let color;
-  if (m.diff(moment(), "days") >= 0) {
-    color = Colors.FOREST1;
-  } else {
-    color = Colors.FOREST3;
-  }
 
   if (m.isValid()) {
     return (
-      <Tag className={classNames(Classes.LARGE)} style={{ background: color }}>
+      <Tag
+        className={classNames(Classes.LARGE)}
+        interactive={true}
+        intent={intent}
+      >
         {m.format(format)}
       </Tag>
     );
@@ -32,6 +33,8 @@ export const MomentDate = ({
   }
 };
 
+export const EnhancedMomentDate = withColors(MomentDate, []);
+
 export const MomentDateRange = ({
   className,
   range: [start, end],
@@ -39,8 +42,8 @@ export const MomentDateRange = ({
   format = withTime ? FORMAT_TIME : FORMAT
 }) => (
   <div className={classNames("docs-date-range", className)}>
-    <MomentDate withTime={withTime} date={start} format={format} />
+    <EnhancedMomentDate withTime={withTime} date={start} format={format} />
     <Icon className="mx-1 mt-1" icon="arrow-right" />
-    <MomentDate withTime={withTime} date={end} format={format} />
+    <EnhancedMomentDate withTime={withTime} date={end} format={format} />
   </div>
 );

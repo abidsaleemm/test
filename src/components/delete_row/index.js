@@ -33,7 +33,9 @@ const DeleteRow = props => {
         icon="trash"
         className={Classes.MINIMAL}
         intent={Intent.DANGER}
-        onClick={() => toggleDialog(true)}
+        onClick={() => {
+          toggleDialog(true);
+        }}
       >
         Remove
       </Button>
@@ -41,10 +43,10 @@ const DeleteRow = props => {
         icon="trash"
         isOpen={isOpen}
         onClose={() => toggleDialog(false)}
-        title="Delete Row"
+        title="Delete Entry"
       >
         <div className={Classes.DIALOG_BODY}>
-          Would you like to remove the selected row?
+          Would you like to remove the selected entry?
         </div>
         <div className={Classes.DIALOG_FOOTER}>
           <div className={Classes.DIALOG_FOOTER_ACTIONS}>

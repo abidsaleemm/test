@@ -12,16 +12,25 @@ import Pagination from "components/pagination";
 import AddRow from "components/add_row";
 import EditRow from "components/edit_row";
 import DeleteRow from "components/delete_row";
+import PreferredWorkingHours from "components/preferred_working_hours";
 import { setParams, getRecords } from "store/actions/record";
-import { MomentDateRange, MomentDate } from "components/moment_daterange";
+import {
+  MomentDateRange,
+  EnhancedMomentDate
+} from "components/moment_daterange";
 import withToast from "hoc/withToast";
+import withColors from "hoc/withColors";
+import { DATE_FORMAT } from "constants/index";
 
 const style = {
   card: {
-    width: "80%",
-    maxWidth: "70rem",
+    width: "90%",
+    maxWidth: "100rem",
     margin: "auto",
     marginTop: "3rem"
+  },
+  cardChild: {
+    justifyContent: "space-between"
   },
   cell: {
     padding: "0.3rem"
@@ -35,12 +44,12 @@ const Dashboard = props => {
 
   const jsDateFormatter = {
     formatDate: date => {
-      return moment(date).format("YYYY/MM/DD");
+      return moment(date).format(DATE_FORMAT);
     },
     parseDate: str => {
       return new Date(str);
     },
-    placeholder: "YYYY/MM/DD"
+    placeholder: DATE_FORMAT
   };
 
   const onPageChange = page => {
@@ -53,33 +62,35 @@ const Dashboard = props => {
 
   const handleChangeDateRange = dateRange => {
     const [fromDate, toDate] = dateRange;
+    const from = moment(fromDate);
+    const to = moment(toDate);
     setParams({
-      from: moment(fromDate).format("YYYY/MM/DD"),
-      to: moment(toDate).format("YYYY/MM/DD")
+      from: from.isValid() ? from.format(DATE_FORMAT) : null,
+      to: to.isValid() ? to.format(DATE_FORMAT) : null
     });
     updateStartDate(fromDate);
     updateEndDate(toDate);
-    getRecords(params);
   };
 
   return (
     <>
       <Header />
       <Card elevation={Elevation.FOUR} style={style.card}>
-        <div className={Classes.NAVBAR_GROUP}>
+        <div className={Classes.NAVBAR_GROUP} style={style.cardChild}>
+          <AddRow />
           <ButtonGroup>
-            <AddRow />
             <DateRangeInput
               className="mr-3"
               value={[startDate, endDate]}
               onChange={handleChangeDateRange}
               {...jsDateFormatter}
             />
+            <MomentDateRange
+              className={classNames(Classes.DIALOG_FOOTER_ACTIONS)}
+              range={[startDate, endDate]}
+            />
           </ButtonGroup>
-          <MomentDateRange
-            className={classNames(Classes.DIALOG_FOOTER_ACTIONS)}
-            range={[startDate, endDate]}
-          />
+          <PreferredWorkingHours />
         </div>
         <Table
           numRows={records.length}
@@ -92,7 +103,11 @@ const Dashboard = props => {
             name="Date"
             cellRenderer={row => (
               <Cell>
-                <MomentDate withTime={false} date={records[row].date} />
+                <EnhancedMomentDate
+                  withTime={false}
+                  date={records[row].date}
+                  row={row}
+                />
               </Cell>
             )}
           />
@@ -144,5 +159,5 @@ const mapDispatchToProps = {
 };
 
 export default compose(connect(mapStateToProps, mapDispatchToProps))(
-  withToast(Dashboard)
+  withColors(withToast(Dashboard), [])
 );
