@@ -9,9 +9,7 @@ import { DateRangeInput } from "@blueprintjs/datetime";
 import moment from "moment";
 import Header from "components/header";
 import Pagination from "components/pagination";
-import AddRow from "components/add_row";
-import EditRow from "components/edit_row";
-import DeleteRow from "components/delete_row";
+import { AddRow, EditRow, DeleteRow } from "components/record";
 import PreferredWorkingHours from "components/preferred_working_hours";
 import { setParams, getRecords } from "store/actions/record";
 import {
@@ -94,9 +92,8 @@ const Dashboard = props => {
         </div>
         <Table
           numRows={records.length}
-          style={style.table}
           defaultRowHeight={38}
-          defaultColumnWidth={200}
+          columnWidths={[200, 500, 200, 200]}
         >
           <Column
             className={classNames(Classes.LARGE, "pt-1", "pl-2")}
