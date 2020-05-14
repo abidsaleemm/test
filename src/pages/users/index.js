@@ -8,6 +8,7 @@ import { upperFirst, toLower } from "lodash-es";
 import Header from "components/header";
 import { getUsers } from "store/actions/user";
 import { ROLES } from "constants/index";
+import { AddRow } from "components/user";
 
 const Users = props => {
   const { users, getUsers, params } = props;
@@ -16,12 +17,11 @@ const Users = props => {
     getUsers({ params });
   }, [params]);
 
-  console.log("users: ", users);
-
   return (
     <>
       <Header />
       <Card elevation={Elevation.FOUR}>
+        <AddRow />
         <Table
           numRows={users.length}
           defaultRowHeight={38}

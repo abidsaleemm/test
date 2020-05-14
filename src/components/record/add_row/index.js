@@ -15,7 +15,7 @@ import moment from "moment";
 import _ from "lodash-es";
 import { createRecord, getRecords } from "store/actions/record";
 import { showToast } from "store/actions/toast";
-import { DATE_FORMAT, FIELDS } from "constants/index";
+import { DATE_FORMAT, RECORD_FIELDS } from "constants/index";
 
 const AddRow = props => {
   const { createRecord, params, getRecords, showToast } = props;
@@ -25,7 +25,7 @@ const AddRow = props => {
   const fieldList = ["date", "note", "hour"];
 
   const validation = {};
-  _.toPairs(_.pick(FIELDS, fieldList)).map(
+  _.toPairs(_.pick(RECORD_FIELDS, fieldList)).map(
     a => (validation[a[0]] = _.get(a[1], "validate", null))
   );
   const validateSchema = Yup.object().shape(validation);
@@ -62,7 +62,7 @@ const AddRow = props => {
   };
 
   const initialValue = {};
-  _.toPairs(_.pick(FIELDS, fieldList)).map(
+  _.toPairs(_.pick(RECORD_FIELDS, fieldList)).map(
     a => (initialValue[a[0]] = _.get(a[1], "initialValue", ""))
   );
 
@@ -91,11 +91,11 @@ const AddRow = props => {
                       <FormGroup
                         helperText={errors[field]}
                         intent={errors[field] ? Intent.DANGER : Intent.NONE}
-                        label={FIELDS[field].label}
-                        labelFor={FIELDS[field].id}
+                        label={RECORD_FIELDS[field].form_label}
+                        labelFor={RECORD_FIELDS[field].id}
                       >
                         <Field
-                          {...FIELDS[field]}
+                          {...RECORD_FIELDS[field]}
                           {...(field === "date" ? passProps : null)}
                         />
                       </FormGroup>

@@ -15,7 +15,7 @@ import {
 import moment from "moment";
 import { updateRecord, getRecords } from "store/actions/record";
 import { showToast } from "store/actions/toast";
-import { DATE_FORMAT, FIELDS } from "constants/index";
+import { DATE_FORMAT, USER_FIELDS } from "constants/index";
 
 const EditRow = props => {
   const { updateRecord, params, getRecords, showToast, selectedRow } = props;
@@ -25,7 +25,7 @@ const EditRow = props => {
   const fieldList = ["date", "note", "hour"];
 
   const validation = {};
-  _.toPairs(_.pick(FIELDS, fieldList)).map(
+  _.toPairs(_.pick(USER_FIELDS, fieldList)).map(
     a => (validation[a[0]] = _.get(a[1], "validate", null))
   );
   const validateSchema = Yup.object().shape(validation);
@@ -63,7 +63,7 @@ const EditRow = props => {
   };
 
   const initialValue = {};
-  _.toPairs(_.pick(FIELDS, fieldList)).map(
+  _.toPairs(_.pick(USER_FIELDS, fieldList)).map(
     a => (initialValue[a[0]] = _.get(selectedRow, a[0], ""))
   );
 
@@ -97,11 +97,11 @@ const EditRow = props => {
                       <FormGroup
                         helperText={errors[field]}
                         intent={errors[field] ? Intent.DANGER : Intent.NONE}
-                        label={FIELDS[field].label}
-                        labelFor={FIELDS[field].id}
+                        label={USER_FIELDS[field].label}
+                        labelFor={USER_FIELDS[field].id}
                       >
                         <Field
-                          {...FIELDS[field]}
+                          {...USER_FIELDS[field]}
                           {...(field === "date" ? passProps : null)}
                         />
                       </FormGroup>

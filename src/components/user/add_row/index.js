@@ -11,20 +11,22 @@ import {
   FormGroup,
   ProgressBar
 } from "@blueprintjs/core";
-import moment from "moment";
+import { handleNumberChange } from "@blueprintjs/docs-theme";
 import _ from "lodash-es";
 import { createRecord, getRecords } from "store/actions/record";
 import { showToast } from "store/actions/toast";
-import { DATE_FORMAT, FIELDS } from "constants/index";
+import { USER_FIELDS } from "constants/index";
 
 const AddRow = props => {
   const { createRecord, params, getRecords, showToast } = props;
   const [isOpen, toggleDialog] = useState(false);
+  const [value, setValue] = useState(0);
+  const handleValueChange = handleNumberChange(value => setValue(value));
 
-  const fieldList = ["date", "note", "hour"];
+  const fieldList = ["firstName", "lastName", "email", "password", "role"];
 
   const validation = {};
-  _.toPairs(_.pick(FIELDS, fieldList)).map(
+  _.toPairs(_.pick(USER_FIELDS, fieldList)).map(
     a => (validation[a[0]] = _.get(a[1], "validate", null))
   );
   const validateSchema = Yup.object().shape(validation);
@@ -53,9 +55,14 @@ const AddRow = props => {
   };
 
   const initialValue = {};
-  _.toPairs(_.pick(FIELDS, fieldList)).map(
+  _.toPairs(_.pick(USER_FIELDS, fieldList)).map(
     a => (initialValue[a[0]] = _.get(a[1], "initialValue", ""))
   );
+
+  const passToProps = {
+    onChange: handleValueChange,
+    selectedValue: value
+  };
 
   return (
     <>
@@ -82,10 +89,13 @@ const AddRow = props => {
                       <FormGroup
                         helperText={errors[field]}
                         intent={errors[field] ? Intent.DANGER : Intent.NONE}
-                        label={FIELDS[field].label}
-                        labelFor={FIELDS[field].id}
+                        label={USER_FIELDS[field].form_label}
+                        labelFor={USER_FIELDS[field].id}
                       >
-                        <Field {...FIELDS[field]} />
+                        <Field
+                          {...USER_FIELDS[field]}
+                          {...(field === "role" ? passToProps : null)}
+                        />
                       </FormGroup>
                     );
                   })}
