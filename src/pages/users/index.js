@@ -8,7 +8,7 @@ import { upperFirst, toLower } from "lodash-es";
 import Header from "components/header";
 import { getUsers } from "store/actions/user";
 import { ROLES } from "constants/index";
-import { AddRow } from "components/user";
+import { AddRow, EditRow, DeleteRow } from "components/user";
 
 const Users = props => {
   const { users, getUsers, params } = props;
@@ -59,7 +59,10 @@ const Users = props => {
             name="Actions"
             cellRenderer={row => (
               <Cell>
-                <ButtonGroup></ButtonGroup>
+                <ButtonGroup>
+                  <EditRow selectedRow={users[row]} />
+                  <DeleteRow selectedRow={users[row]} />
+                </ButtonGroup>
               </Cell>
             )}
           />

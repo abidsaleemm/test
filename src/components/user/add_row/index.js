@@ -13,17 +13,25 @@ import {
 } from "@blueprintjs/core";
 import { handleNumberChange } from "@blueprintjs/docs-theme";
 import _ from "lodash-es";
-import { createRecord, getRecords } from "store/actions/record";
+import { createUser, getUsers } from "store/actions/user";
 import { showToast } from "store/actions/toast";
+import withToast from "hoc/withToast";
 import { USER_FIELDS } from "constants/index";
 
 const AddRow = props => {
-  const { createRecord, params, getRecords, showToast } = props;
+  const { createUser, params, getUsers, showToast } = props;
   const [isOpen, toggleDialog] = useState(false);
   const [value, setValue] = useState(0);
   const handleValueChange = handleNumberChange(value => setValue(value));
 
-  const fieldList = ["firstName", "lastName", "email", "password", "role"];
+  const fieldList = [
+    "firstName",
+    "lastName",
+    "email",
+    "password",
+    "role",
+    "preferredWorkingHours"
+  ];
 
   const validation = {};
   _.toPairs(_.pick(USER_FIELDS, fieldList)).map(
@@ -32,13 +40,14 @@ const AddRow = props => {
   const validateSchema = Yup.object().shape(validation);
 
   const handleSubmit = (values, actions) => {
-    createRecord({
+    values["role"] = value;
+    createUser({
       body: values,
       success: () => {
         actions.setSubmitting(false);
-        getRecords({ params });
+        getUsers({ params });
         showToast({
-          message: "Successfully added one row to table!",
+          message: "Successfully added one user!",
           intent: Intent.SUCCESS,
           timeout: 3000
         });
@@ -48,7 +57,8 @@ const AddRow = props => {
         actions.setSubmitting(false);
         showToast({
           message: err.response.data,
-          intent: Intent.DANGER
+          intent: Intent.DANGER,
+          timeout: 3000
         });
       }
     });
@@ -121,13 +131,15 @@ const AddRow = props => {
 };
 
 const mapStateToProps = state => ({
-  params: state.record.params
+  params: state.user.params
 });
 
 const mapDispatchToProps = {
-  createRecord: createRecord,
-  getRecords: getRecords,
+  createUser: createUser,
+  getUsers: getUsers,
   showToast: showToast
 };
 
-export default compose(connect(mapStateToProps, mapDispatchToProps))(AddRow);
+export default compose(connect(mapStateToProps, mapDispatchToProps))(
+  withToast(AddRow)
+);

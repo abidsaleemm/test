@@ -119,6 +119,21 @@ export const USER_FIELDS = {
     validate: null,
     initialValue: 0,
     inline: true
+  },
+  preferredWorkingHours: {
+    label: "Preferred Working Hours",
+    form_label: "Preferred Working Hours",
+    placeholder: "Preferred Working Hours (required)",
+    id: "preferredWorkingHours",
+    type: "text",
+    name: "preferredWorkingHours",
+    component: NumericInput,
+    validate: Yup.number()
+      .notOneOf([0], "Hour must be over 0!")
+      .min(0, "Hour must be over 0!")
+      .max(24, "Hour must be less than 24!")
+      .required("Required"),
+    initialValue: 0
   }
 };
 

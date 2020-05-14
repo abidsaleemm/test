@@ -15,6 +15,7 @@ import moment from "moment";
 import _ from "lodash-es";
 import { createRecord, getRecords } from "store/actions/record";
 import { showToast } from "store/actions/toast";
+import withToast from "hoc/withToast";
 import { DATE_FORMAT, RECORD_FIELDS } from "constants/index";
 
 const AddRow = props => {
@@ -132,4 +133,6 @@ const mapDispatchToProps = {
   showToast: showToast
 };
 
-export default compose(connect(mapStateToProps, mapDispatchToProps))(AddRow);
+export default compose(connect(mapStateToProps, mapDispatchToProps))(
+  withToast(AddRow)
+);

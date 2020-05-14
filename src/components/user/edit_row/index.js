@@ -12,17 +12,26 @@ import {
   FormGroup,
   ProgressBar
 } from "@blueprintjs/core";
-import moment from "moment";
-import { updateRecord, getRecords } from "store/actions/record";
+import { handleNumberChange } from "@blueprintjs/docs-theme";
+import { updateUser, getUsers } from "store/actions/user";
 import { showToast } from "store/actions/toast";
-import { DATE_FORMAT, USER_FIELDS } from "constants/index";
+import withToast from "hoc/withToast";
+import { USER_FIELDS } from "constants/index";
 
 const EditRow = props => {
-  const { updateRecord, params, getRecords, showToast, selectedRow } = props;
+  const { updateUser, params, getUsers, showToast, selectedRow } = props;
   const [isOpen, toggleDialog] = useState(false);
-  const [toDate, selectDate] = useState(new Date(selectedRow.date));
+  const [value, setValue] = useState(selectedRow.role);
+  const handleValueChange = handleNumberChange(value => setValue(value));
 
-  const fieldList = ["date", "note", "hour"];
+  const fieldList = [
+    "firstName",
+    "lastName",
+    "email",
+    "password",
+    "role",
+    "preferredWorkingHours"
+  ];
 
   const validation = {};
   _.toPairs(_.pick(USER_FIELDS, fieldList)).map(
@@ -31,15 +40,18 @@ const EditRow = props => {
   const validateSchema = Yup.object().shape(validation);
 
   const handleSubmit = (values, actions) => {
-    values["date"] = moment(toDate).format(DATE_FORMAT);
-    updateRecord({
+    values["role"] = value;
+    if (values["password"].includes("******")) {
+      _.omit(values, ["password"]);
+    }
+    updateUser({
       id: selectedRow._id,
       body: values,
       success: () => {
         actions.setSubmitting(false);
-        getRecords({ params });
+        getUsers({ params });
         showToast({
-          message: "Successfully updated the row to table!",
+          message: "Successfully updated selected user!",
           intent: Intent.SUCCESS,
           timeout: 3000
         });
@@ -55,17 +67,16 @@ const EditRow = props => {
     });
   };
 
-  const passProps = {
-    onChange: date => {
-      selectDate(date);
-    },
-    value: toDate
+  const passToProps = {
+    onChange: handleValueChange,
+    selectedValue: value
   };
 
   const initialValue = {};
   _.toPairs(_.pick(USER_FIELDS, fieldList)).map(
     a => (initialValue[a[0]] = _.get(selectedRow, a[0], ""))
   );
+  initialValue["password"] = "********";
 
   return (
     <>
@@ -81,7 +92,7 @@ const EditRow = props => {
         icon="edit"
         isOpen={isOpen}
         onClose={() => toggleDialog(false)}
-        title="Edit Entry"
+        title="Edit User"
       >
         <div className={Classes.DIALOG_BODY}>
           <Formik
@@ -97,12 +108,12 @@ const EditRow = props => {
                       <FormGroup
                         helperText={errors[field]}
                         intent={errors[field] ? Intent.DANGER : Intent.NONE}
-                        label={USER_FIELDS[field].label}
+                        label={USER_FIELDS[field].form_label}
                         labelFor={USER_FIELDS[field].id}
                       >
                         <Field
                           {...USER_FIELDS[field]}
-                          {...(field === "date" ? passProps : null)}
+                          {...(field === "role" ? passToProps : null)}
                         />
                       </FormGroup>
                     );
@@ -129,13 +140,15 @@ const EditRow = props => {
 };
 
 const mapStateToProps = state => ({
-  params: state.record.params
+  params: state.user.params
 });
 
 const mapDispatchToProps = {
-  updateRecord: updateRecord,
-  getRecords: getRecords,
+  updateUser: updateUser,
+  getUsers: getUsers,
   showToast: showToast
 };
 
-export default compose(connect(mapStateToProps, mapDispatchToProps))(EditRow);
+export default compose(connect(mapStateToProps, mapDispatchToProps))(
+  withToast(EditRow)
+);

@@ -2,20 +2,21 @@ import React, { useState } from "react";
 import { connect } from "react-redux";
 import { compose } from "redux";
 import { Button, Dialog, Intent, Classes } from "@blueprintjs/core";
-import { delRecord, getRecords } from "store/actions/record";
+import { deleteUser, getUsers } from "store/actions/user";
 import { showToast } from "store/actions/toast";
+import withToast from "hoc/withToast";
 
 const DeleteRow = props => {
-  const { delRecord, params, getRecords, showToast, selectedRow } = props;
+  const { deleteUser, params, getUsers, showToast, selectedRow } = props;
   const [isOpen, toggleDialog] = useState(false);
 
   const deleteRow = () => {
-    delRecord({
+    deleteUser({
       id: selectedRow._id,
       success: () => {
-        getRecords({ params });
+        getUsers({ params });
         showToast({
-          message: "Selected Record removed.",
+          message: "Selected user removed!",
           intent: Intent.SUCCESS
         });
         toggleDialog(false);
@@ -43,10 +44,10 @@ const DeleteRow = props => {
         icon="trash"
         isOpen={isOpen}
         onClose={() => toggleDialog(false)}
-        title="Delete Entry"
+        title="Delete User"
       >
         <div className={Classes.DIALOG_BODY}>
-          Would you like to remove the selected entry?
+          Would you like to remove the selected user?
         </div>
         <div className={Classes.DIALOG_FOOTER}>
           <div className={Classes.DIALOG_FOOTER_ACTIONS}>
@@ -65,13 +66,15 @@ const DeleteRow = props => {
 };
 
 const mapStateToProps = state => ({
-  params: state.record.params
+  params: state.user.params
 });
 
 const mapDispatchToProps = {
-  delRecord: delRecord,
-  getRecords: getRecords,
+  deleteUser: deleteUser,
+  getUsers: getUsers,
   showToast: showToast
 };
 
-export default compose(connect(mapStateToProps, mapDispatchToProps))(DeleteRow);
+export default compose(connect(mapStateToProps, mapDispatchToProps))(
+  withToast(DeleteRow)
+);
