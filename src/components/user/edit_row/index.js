@@ -42,7 +42,7 @@ const EditRow = props => {
   const handleSubmit = (values, actions) => {
     values["role"] = value;
     if (values["password"].includes("******")) {
-      _.omit(values, ["password"]);
+      values = _.omit(values, ["password"]);
     }
     updateUser({
       id: selectedRow._id,
@@ -93,6 +93,7 @@ const EditRow = props => {
         isOpen={isOpen}
         onClose={() => toggleDialog(false)}
         title="Edit User"
+        className={Classes.DARK}
       >
         <div className={Classes.DIALOG_BODY}>
           <Formik
@@ -127,6 +128,7 @@ const EditRow = props => {
                       intent={Intent.PRIMARY}
                       onClick={submitForm}
                       text="Edit"
+                      className={Classes.DARK}
                     />
                   </div>
                 </Form>

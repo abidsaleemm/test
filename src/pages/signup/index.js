@@ -76,7 +76,7 @@ function SignUp(props) {
 
   return (
     <Card
-      className="bp3-dark"
+      className="bp3-dark transition"
       interactive={true}
       elevation={Elevation.TWO}
       style={{ width: "30rem", margin: "auto" }}
@@ -169,7 +169,7 @@ function SignUp(props) {
             <br />
 
             <Button
-              className={classNames(Classes.INTENT_PRIMARY, Classes.LARGE)}
+              className={classNames(Classes.DARK, Classes.LARGE)}
               disabled={isSubmitting}
               onClick={submitForm}
               icon="log-in"

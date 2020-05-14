@@ -55,7 +55,7 @@ const PreferredWorkingHours = props => {
     <>
       <Button
         icon="time"
-        intent={Intent.PRIMARY}
+        className={Classes.DARK}
         onClick={() => toggleDialog(true)}
       >
         Update Preferred Working Hours ({me.preferredWorkingHours} hours)
@@ -65,6 +65,7 @@ const PreferredWorkingHours = props => {
         isOpen={isOpen}
         onClose={() => toggleDialog(false)}
         title="Update Preferred Working Hours"
+        className={Classes.DARK}
       >
         <div className={Classes.DIALOG_BODY}>
           <Formik

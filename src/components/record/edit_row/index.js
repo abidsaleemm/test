@@ -82,6 +82,7 @@ const EditRow = props => {
         isOpen={isOpen}
         onClose={() => toggleDialog(false)}
         title="Edit Entry"
+        className={Classes.DARK}
       >
         <div className={Classes.DIALOG_BODY}>
           <Formik

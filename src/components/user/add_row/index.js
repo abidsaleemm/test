@@ -84,6 +84,7 @@ const AddRow = props => {
         isOpen={isOpen}
         onClose={() => toggleDialog(false)}
         title="Add User"
+        className={Classes.DARK}
       >
         <div className={Classes.DIALOG_BODY}>
           <Formik
@@ -118,6 +119,7 @@ const AddRow = props => {
                       intent={Intent.PRIMARY}
                       onClick={submitForm}
                       text="Add"
+                      className={Classes.DARK}
                     />
                   </div>
                 </Form>

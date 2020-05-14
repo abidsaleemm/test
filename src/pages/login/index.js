@@ -122,7 +122,7 @@ const SignIn = props => {
               {isSubmitting && <ProgressBar />}
               <br />
               <Button
-                className={classNames(Classes.INTENT_PRIMARY, Classes.LARGE)}
+                className={classNames(Classes.DARK, Classes.LARGE)}
                 disabled={isSubmitting}
                 onClick={submitForm}
                 icon="log-in"

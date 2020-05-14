@@ -3,7 +3,15 @@ import { connect } from "react-redux";
 import { compose } from "redux";
 import PropTypes from "prop-types";
 import classNames from "classnames";
-import { Card, Elevation, ButtonGroup, Classes } from "@blueprintjs/core";
+import _ from "lodash-es";
+import {
+  Card,
+  Elevation,
+  ButtonGroup,
+  Classes,
+  Intent,
+  Colors
+} from "@blueprintjs/core";
 import { Table, Column, Cell } from "@blueprintjs/table";
 import { DateRangeInput } from "@blueprintjs/datetime";
 import moment from "moment";
@@ -17,7 +25,6 @@ import {
   EnhancedMomentDate
 } from "components/moment_daterange";
 import withToast from "hoc/withToast";
-import withColors from "hoc/withColors";
 import { DATE_FORMAT } from "constants/index";
 
 const style = {
@@ -36,9 +43,30 @@ const style = {
 };
 
 const Dashboard = props => {
-  const { setParams, params, getRecords, records } = props;
+  const { setParams, params, getRecords, records, count } = props;
   const [startDate, updateStartDate] = useState(null);
   const [endDate, updateEndDate] = useState(null);
+
+  const getColor = row => {
+    const pair = {};
+    _.toPairs(
+      _.groupBy(records, record => moment(record.date).format(DATE_FORMAT))
+    ).map(group => {
+      pair[group[0]] = _.sumBy(group[1], "hour");
+    });
+
+    if (row >= 0) {
+      const rowDate = moment(_.get(records, `${row}.date`)).format(DATE_FORMAT);
+      const preferredWorkingHours = _.get(
+        records,
+        `${row}.user.preferredWorkingHours`,
+        0
+      );
+      return preferredWorkingHours > pair[rowDate]
+        ? Intent.DANGER
+        : Intent.SUCCESS;
+    }
+  };
 
   const jsDateFormatter = {
     formatDate: date => {
@@ -71,9 +99,13 @@ const Dashboard = props => {
   };
 
   return (
-    <>
+    <div>
       <Header />
-      <Card elevation={Elevation.FOUR} style={style.card}>
+      <Card
+        elevation={Elevation.FOUR}
+        className={Classes.DARK}
+        style={style.card}
+      >
         <div className={Classes.NAVBAR_GROUP} style={style.cardChild}>
           <AddRow />
           <ButtonGroup>
@@ -93,17 +125,18 @@ const Dashboard = props => {
         <Table
           numRows={records.length}
           defaultRowHeight={38}
-          columnWidths={[200, 500, 200, 200]}
+          columnWidths={[200, 1000, 150, 180]}
         >
           <Column
             className={classNames(Classes.LARGE, "pt-1", "pl-2")}
             name="Date"
             cellRenderer={row => (
-              <Cell>
+              <Cell intent={getColor(row)}>
                 <EnhancedMomentDate
                   withTime={false}
                   date={records[row].date}
                   row={row}
+                  intent={getColor(row)}
                 />
               </Cell>
             )}
@@ -111,17 +144,21 @@ const Dashboard = props => {
           <Column
             className={Classes.LARGE}
             name="Note"
-            cellRenderer={row => <Cell>{records[row].note}</Cell>}
+            cellRenderer={row => (
+              <Cell intent={getColor(row)}>{records[row].note}</Cell>
+            )}
           />
           <Column
             className={Classes.LARGE}
             name="Working Hours"
-            cellRenderer={row => <Cell>{records[row].hour}</Cell>}
+            cellRenderer={row => (
+              <Cell intent={getColor(row)}>{records[row].hour}</Cell>
+            )}
           />
           <Column
             name="Actions"
             cellRenderer={row => (
-              <Cell style={style.cell}>
+              <Cell intent={getColor(row)} style={style.cell}>
                 <ButtonGroup>
                   <EditRow selectedRow={records[row]} />
                   <DeleteRow selectedRow={records[row]} />
@@ -130,9 +167,15 @@ const Dashboard = props => {
             )}
           />
         </Table>
-        <Pagination initialPage={1} onPageChange={onPageChange} />
+        <Pagination
+          initialPage={1}
+          onPageChange={onPageChange}
+          setParams={setParams}
+          params={params}
+          count={count}
+        />
       </Card>
-    </>
+    </div>
   );
 };
 
@@ -156,5 +199,5 @@ const mapDispatchToProps = {
 };
 
 export default compose(connect(mapStateToProps, mapDispatchToProps))(
-  withColors(withToast(Dashboard), [])
+  withToast(Dashboard)
 );

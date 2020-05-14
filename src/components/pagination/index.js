@@ -1,10 +1,7 @@
 import React, { useReducer, useEffect } from "react";
-import { connect } from "react-redux";
-import { compose } from "redux";
 import { Button, ButtonGroup, Intent, MenuItem } from "@blueprintjs/core";
 import { Select } from "@blueprintjs/select";
 import PropTypes from "prop-types";
-import { setParams } from "store/actions/record";
 
 const items = [5, 10, 25, 50];
 
@@ -16,8 +13,6 @@ const style = {
 
 const getState = ({ currentPage, size, total }) => {
   const totalPages = Math.ceil(total / size);
-
-  console.log(currentPage, size, total);
 
   let startPage, endPage;
   if (totalPages <= 10) {
@@ -101,7 +96,6 @@ const Pagination = ({
       count % state.size === 0 &&
       state.currentPage > 1
     ) {
-      console.log("page change: ", state.currentPage);
       dispatch({ type: "PAGE_CHANGE", page: state.currentPage - 1 });
       onPageChange(state.currentPage - 1);
     }
@@ -176,7 +170,7 @@ const Pagination = ({
 Pagination.propTypes = {
   initialPage: PropTypes.number.isRequired,
   size: PropTypes.number.isRequired,
-  total: PropTypes.number.isRequired,
+  total: PropTypes.number,
   onPageChange: PropTypes.func,
   setParams: PropTypes.func.isRequired,
   params: PropTypes.object.isRequired
@@ -187,15 +181,4 @@ Pagination.defaultProps = {
   size: 25
 };
 
-const mapStateToProps = state => ({
-  params: state.record.params,
-  count: state.record.count
-});
-
-const mapDispatchToProps = {
-  setParams: setParams
-};
-
-export default compose(connect(mapStateToProps, mapDispatchToProps))(
-  Pagination
-);
+export default Pagination;

@@ -77,6 +77,7 @@ const AddRow = props => {
         isOpen={isOpen}
         onClose={() => toggleDialog(false)}
         title="Add Entry"
+        className={Classes.DARK}
       >
         <div className={Classes.DIALOG_BODY}>
           <Formik

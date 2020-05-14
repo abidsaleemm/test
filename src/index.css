@@ -21,6 +21,9 @@ body {
 
 #root {
   height: 100%;
+  display: flex;
+  flex-direction: column;
+  background: #8a9ba8;
 }
 
 .App {

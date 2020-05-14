@@ -12,6 +12,7 @@ const Routes = () => {
   const isAuthenticated = useSelector(
     state => !!get(state, "auth.token", false)
   );
+
   const role = useSelector(state => get(state, "auth.me.role", 0));
   const isManagable = role === ROLES.MANAGER || role === ROLES.ADMIN;
 
@@ -31,6 +32,7 @@ const Routes = () => {
         <Switch>
           <Route path="/login" component={SignIn} />
           <Route path="/signup" component={SignUp} />
+          <Route path="/" render={() => <Redirect to="/login" />} />
         </Switch>
       )}
       {isAuthenticated && (

@@ -45,6 +45,7 @@ const DeleteRow = props => {
         isOpen={isOpen}
         onClose={() => toggleDialog(false)}
         title="Delete User"
+        className={Classes.DARK}
       >
         <div className={Classes.DIALOG_BODY}>
           Would you like to remove the selected user?
@@ -57,6 +58,7 @@ const DeleteRow = props => {
               intent={Intent.DANGER}
               onClick={deleteRow}
               text="Delete"
+              className={Classes.DARK}
             />
           </div>
         </div>

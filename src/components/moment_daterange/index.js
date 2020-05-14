@@ -1,8 +1,7 @@
 import React from "react";
-import { Icon, Tag, Classes, Colors } from "@blueprintjs/core";
+import { Icon, Tag, Classes, Intent } from "@blueprintjs/core";
 import classNames from "classnames";
 import moment from "moment";
-import withColors from "hoc/withColors";
 
 const FORMAT = "dddd, LL";
 const FORMAT_TIME = "dddd, LL LT";
@@ -11,15 +10,18 @@ const MomentDate = ({
   date,
   withTime = false,
   format = withTime ? FORMAT_TIME : FORMAT,
-  row = -1,
-  intent
+  intent = null
 }) => {
   const m = moment(date);
 
   if (m.isValid()) {
     return (
       <Tag
-        className={classNames(Classes.LARGE)}
+        className={classNames(
+          Classes.LARGE,
+          Classes.DARK,
+          !intent ? Classes.MINIMAL : ""
+        )}
         interactive={true}
         intent={intent}
       >
@@ -33,7 +35,7 @@ const MomentDate = ({
   }
 };
 
-export const EnhancedMomentDate = withColors(MomentDate, []);
+export const EnhancedMomentDate = MomentDate;
 
 export const MomentDateRange = ({
   className,
