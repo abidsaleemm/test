@@ -23,7 +23,7 @@ export default ({ type, method, path, headers, success }) =>
         type: Pending(type)
       });
       const options = {
-        url: `http://localhost:8000/api${
+        url: `http://localhost:4000/api${
           typeof path === "function" ? path(action.payload) : path
         }`,
         method: method,
