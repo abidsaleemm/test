@@ -1,5 +1,5 @@
 const { pick, assign, get } = require("lodash");
-const { User, validate, validateUpdate } = require("../models/user");
+const { User, createValidate, updateValidate } = require("../models/user");
 const {
   notFound,
   invalidCredential,
@@ -22,7 +22,7 @@ async function login(req, res, next) {
         );
     }
 
-    if (user.isValid(req.body.password)) {
+    if (user.bcrypt.compareSync(password, user.password)) {
       const token = user.getAuthToken();
       res.json({
         info: pick(user, [
@@ -46,7 +46,7 @@ async function login(req, res, next) {
 
 async function signUp(req, res, next) {
   try {
-    const { error } = validate(req.body);
+    const { error } = createValidate(req.body);
     if (error)
       return res
         .status(400)
@@ -73,7 +73,7 @@ async function signUp(req, res, next) {
 
 async function updateProfile(req, res, next) {
   try {
-    const { error } = validateUpdate(req.body);
+    const { error } = updateValidate(req.body);
     if (error)
       return res
         .status(400)

@@ -1,5 +1,5 @@
 const { isInteger, toNumber } = require("lodash");
-const { User, validate, validateUpdate } = require("../models/user");
+const { User, createValidate, updateValidate } = require("../models/user");
 const { Record } = require("../models/record");
 const {
   Roles,
@@ -35,7 +35,7 @@ async function list(req, res, next) {
 
 async function create(req, res, next) {
   try {
-    const { error } = validate(req.body);
+    const { error } = createValidate(req.body);
     if (error)
       return res
         .status(400)
@@ -61,7 +61,7 @@ async function create(req, res, next) {
 
 async function update(req, res, next) {
   try {
-    const { error } = validateUpdate(req.body);
+    const { error } = updateValidate(req.body);
     if (error)
       return res
         .status(400)

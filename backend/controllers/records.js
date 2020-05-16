@@ -1,6 +1,6 @@
 const moment = require("moment");
 const { isInteger, assign, toNumber, sumBy, get } = require("lodash");
-const { Record, validate, validateUpdate } = require("../models/record");
+const { Record, createValidate, updateValidate } = require("../models/record");
 const ObjectId = require("mongodb").ObjectID;
 const {
   Roles,
@@ -83,7 +83,7 @@ async function create(req, res, next) {
       req.body.user = req.user._id;
     }
 
-    const { error } = validate(req.body);
+    const { error } = createValidate(req.body);
     if (error)
       return res
         .status(400)
@@ -107,7 +107,7 @@ async function update(req, res, next) {
     if (req.user.role < Roles.ADMIN) {
       req.body.user = req.user._id;
     }
-    const { error } = validateUpdate(req.body);
+    const { error } = updateValidate(req.body);
     if (error)
       return res
         .status(400)
