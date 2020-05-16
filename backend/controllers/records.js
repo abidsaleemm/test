@@ -37,8 +37,9 @@ function read(req, res, next) {
 async function list(req, res, next) {
   try {
     const { from, to, page = 1, rowsPerPage = 10, user } = req.query;
+    const { rule: userRole } = req.user;
     let where = {};
-    if (req.user.role === Roles.USER || req.user.role === Roles.MANAGER) {
+    if (userRole < Roles.ADMIN) {
       where = { user: req.user._id };
     }
 
@@ -57,12 +58,14 @@ async function list(req, res, next) {
     else if (from && !to) where["date"] = { $gte: new Date(from) };
     else if (!from && to) where["date"] = { $lte: new Date(to) };
 
-    if (user && req.user.role === Roles.ADMIN) {
+    if (user && userRole === Roles.ADMIN) {
       where["user"] = ObjectId(user);
     }
 
     if (!isInteger(toNumber(page)) || !isInteger(toNumber(rowsPerPage))) {
-      return res.status(422).send("Page and rows per page must be integer.");
+      return res
+        .status(422)
+        .send("Page and rows per page must be positive integer.");
     }
     const records = await Record.find(where)
       .skip((page - 1) * rowsPerPage)

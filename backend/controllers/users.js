@@ -1,4 +1,4 @@
-const { isInteger, toNumber } = require("lodash");
+const { isInteger, toNumber, pick } = require("lodash");
 const { User, createValidate, updateValidate } = require("../models/user");
 const { Record } = require("../models/record");
 const {
@@ -18,7 +18,9 @@ async function list(req, res, next) {
     const where = { _id: { $ne: req.user._id }, role: { $lte: req.user.role } };
 
     if (!isInteger(toNumber(page)) || !isInteger(toNumber(rowsPerPage))) {
-      return res.status(422).send("Page and rows per page must be integer.");
+      return res
+        .status(422)
+        .send("Page and rows per page must be positive integer.");
     }
 
     const users = await User.find(where)
@@ -48,12 +50,23 @@ async function create(req, res, next) {
         .send(userAlreadyRegistered.message);
 
     if (req.user.role === Roles.MANAGER && req.body.role === Roles.ADMIN) {
-      return res.status(unauthorized.code).send(unauthorized.message);
+      return res
+        .status(unauthorized.code)
+        .send(`${unauthorized.message} Managers cannot create admin.`);
     }
 
     const user = new User(req.body);
     const newUser = await user.save();
-    res.json(newUser);
+    res.json(
+      pick(newUser, [
+        "firstName",
+        "lastName",
+        "email",
+        "_id",
+        "role",
+        "preferredWorkingHours"
+      ])
+    );
   } catch (error) {
     next(error);
   }
@@ -83,7 +96,16 @@ async function update(req, res, next) {
     Object.assign(req.userModel, req.body);
 
     const updatedUser = await req.userModel.save();
-    res.json(updatedUser);
+    res.json(
+      pick(updatedUser, [
+        "firstName",
+        "lastName",
+        "email",
+        "_id",
+        "role",
+        "preferredWorkingHours"
+      ])
+    );
   } catch (error) {
     next(error);
   }

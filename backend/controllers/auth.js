@@ -1,4 +1,5 @@
 const { pick, assign, get } = require("lodash");
+const bcrypt = require("bcrypt");
 const { User, createValidate, updateValidate } = require("../models/user");
 const {
   notFound,
@@ -18,11 +19,11 @@ async function login(req, res, next) {
       return res
         .status(notFound.code)
         .send(
-          `${notFound.message} Please check your email and password again.`
+          `${notFound.message} Please check your email and password again. They do not match.`
         );
     }
 
-    if (user.bcrypt.compareSync(password, user.password)) {
+    if (bcrypt.compareSync(req.body.password, user.password)) {
       const token = user.getAuthToken();
       res.json({
         info: pick(user, [
