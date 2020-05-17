@@ -1,8 +1,9 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { connect } from "react-redux";
 import { compose } from "redux";
 import * as Yup from "yup";
 import { Formik, Form, Field } from "formik";
+import { map } from "lodash-es";
 import {
   Button,
   Dialog,
@@ -17,11 +18,25 @@ import { createRecord, getRecords } from "store/actions/record";
 import { showToast } from "store/actions/toast";
 import withToast from "hoc/withToast";
 import { DATE_FORMAT, RECORD_FIELDS } from "constants/index";
+import { getUsers, setParams } from "store/actions/user";
+import SelectUser from "components/select_user";
 
 const AddRow = props => {
-  const { createRecord, params, getRecords, showToast } = props;
+  const {
+    createRecord,
+    params,
+    getRecords,
+    showToast,
+    me,
+    users,
+    count,
+    userParams,
+    getUsers,
+    setParams
+  } = props;
   const [isOpen, toggleDialog] = useState(false);
   const [toDate, selectDate] = useState(new Date());
+  const [userIndex, setUserIndex] = useState(0);
 
   const fieldList = ["date", "note", "hour"];
 
@@ -31,8 +46,23 @@ const AddRow = props => {
   );
   const validateSchema = Yup.object().shape(validation);
 
+  useEffect(() => {
+    if (userParams.rowsPerPage !== count && me.role === 2) {
+      setParams({ page: 1, rowsPerPage: count });
+      getUsers({ params: userParams });
+    }
+  }, [users, count]);
+
+  const handleClick = item => {
+    const index = map(users, "_id").indexOf(item._id);
+    setUserIndex(index);
+  };
+
   const handleSubmit = (values, actions) => {
     values["date"] = moment(toDate).format(DATE_FORMAT);
+    if (me.role === 2) {
+      values["user"] = users[userIndex]._id;
+    }
     createRecord({
       body: values,
       success: () => {
@@ -103,6 +133,14 @@ const AddRow = props => {
                       </FormGroup>
                     );
                   })}
+                  {me.role === 2 && (
+                    <SelectUser
+                      handleClick={handleClick}
+                      userIndex={userIndex}
+                      users={users}
+                    />
+                  )}
+                  <br />
                   {isSubmitting && <ProgressBar />}
                   <br />
                   <div className={Classes.DIALOG_FOOTER_ACTIONS}>
@@ -125,13 +163,19 @@ const AddRow = props => {
 };
 
 const mapStateToProps = state => ({
-  params: state.record.params
+  params: state.record.params,
+  me: state.auth.me,
+  users: state.user.users,
+  userParams: state.user.params,
+  count: state.user.count
 });
 
 const mapDispatchToProps = {
   createRecord: createRecord,
   getRecords: getRecords,
-  showToast: showToast
+  showToast: showToast,
+  getUsers: getUsers,
+  setParams: setParams
 };
 
 export default compose(connect(mapStateToProps, mapDispatchToProps))(

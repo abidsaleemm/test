@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React from "react";
 import { RadioGroup, Radio } from "@blueprintjs/core";
 import { upperFirst, toLower } from "lodash-es";
 import { ROLES } from "constants/index";

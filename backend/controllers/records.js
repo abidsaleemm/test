@@ -37,9 +37,9 @@ function read(req, res, next) {
 async function list(req, res, next) {
   try {
     const { from, to, page = 1, rowsPerPage = 10, user } = req.query;
-    const { rule: userRole } = req.user;
+
     let where = {};
-    if (userRole < Roles.ADMIN) {
+    if (req.user.role < Roles.ADMIN) {
       where = { user: req.user._id };
     }
 

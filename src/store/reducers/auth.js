@@ -38,7 +38,7 @@ export default handleActions(
       error: payload
     }),
 
-    [Success(SIGNUP)]: (state, { payload }) => ({
+    [Success(SIGNUP)]: state => ({
       ...state,
       status: "SUCCESS",
       error: null
@@ -65,7 +65,7 @@ export default handleActions(
       error: payload
     }),
 
-    [SIGNOUT]: (state, {}) => ({
+    [SIGNOUT]: state => ({
       ...state,
       token: null,
       status: SIGNOUT,

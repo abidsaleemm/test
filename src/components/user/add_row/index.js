@@ -45,7 +45,6 @@ const AddRow = props => {
       body: values,
       success: () => {
         actions.setSubmitting(false);
-        getUsers({ params });
         showToast({
           message: "Successfully added one user!",
           intent: Intent.SUCCESS,

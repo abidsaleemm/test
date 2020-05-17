@@ -49,7 +49,6 @@ const EditRow = props => {
       body: values,
       success: () => {
         actions.setSubmitting(false);
-        getUsers({ params });
         showToast({
           message: "Successfully updated selected user!",
           intent: Intent.SUCCESS,

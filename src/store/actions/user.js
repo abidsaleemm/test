@@ -8,7 +8,6 @@ import {
   SET_USER_PARAMS
 } from "store/constants";
 
-// User
 export const getUsers = createAction(GET_USERS);
 export const createUser = createAction(CREATE_USER);
 export const updateUser = createAction(UPDATE_USER);

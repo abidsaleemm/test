@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { connect } from "react-redux";
 import { compose } from "redux";
 import { Formik, Form, Field } from "formik";
@@ -12,15 +12,31 @@ import {
   FormGroup,
   ProgressBar
 } from "@blueprintjs/core";
+import { map } from "lodash-es";
 import moment from "moment";
 import { updateRecord, getRecords } from "store/actions/record";
 import { showToast } from "store/actions/toast";
 import { DATE_FORMAT, RECORD_FIELDS } from "constants/index";
+import SelectUser from "components/select_user";
 
 const EditRow = props => {
-  const { updateRecord, params, getRecords, showToast, selectedRow } = props;
+  const {
+    updateRecord,
+    params,
+    getRecords,
+    showToast,
+    selectedRow,
+    me,
+    users
+  } = props;
   const [isOpen, toggleDialog] = useState(false);
   const [toDate, selectDate] = useState(new Date(selectedRow.date));
+
+  const [userIndex, setUserIndex] = useState(0);
+
+  useEffect(() => {
+    setUserIndex(map(users, "_id").indexOf(selectedRow.user["_id"]));
+  }, [selectedRow, users]);
 
   const fieldList = ["date", "note", "hour"];
 
@@ -30,14 +46,21 @@ const EditRow = props => {
   );
   const validateSchema = Yup.object().shape(validation);
 
+  const handleClick = item => {
+    const index = map(users, "_id").indexOf(item._id);
+    setUserIndex(index);
+  };
+
   const handleSubmit = (values, actions) => {
     values["date"] = moment(toDate).format(DATE_FORMAT);
+    if (me.role === 2) {
+      values["user"] = users[userIndex]._id;
+    }
     updateRecord({
       id: selectedRow._id,
       body: values,
       success: () => {
         actions.setSubmitting(false);
-        getRecords({ params });
         showToast({
           message: "Successfully updated the row to table!",
           intent: Intent.SUCCESS,
@@ -108,6 +131,14 @@ const EditRow = props => {
                       </FormGroup>
                     );
                   })}
+                  {me.role === 2 && (
+                    <SelectUser
+                      handleClick={handleClick}
+                      userIndex={userIndex}
+                      users={users}
+                    />
+                  )}
+                  <br />
                   {isSubmitting && <ProgressBar />}
                   <br />
                   <div className={Classes.DIALOG_FOOTER_ACTIONS}>
@@ -130,7 +161,11 @@ const EditRow = props => {
 };
 
 const mapStateToProps = state => ({
-  params: state.record.params
+  params: state.record.params,
+  me: state.auth.me,
+  users: state.user.users,
+  userParams: state.user.params,
+  count: state.user.count
 });
 
 const mapDispatchToProps = {

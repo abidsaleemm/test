@@ -24,6 +24,8 @@ body {
   display: flex;
   flex-direction: column;
   background: #8a9ba8;
+  overflow: auto;
+  padding-bottom: 3rem;
 }
 
 .App {

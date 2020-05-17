@@ -1,4 +1,5 @@
 import { handleActions } from "redux-actions";
+import { map, set } from "lodash-es";
 import { Success, Fail } from "utils/status";
 import {
   GET_USERS,
@@ -52,8 +53,12 @@ export default handleActions(
       };
     },
     [Success(UPDATE_USER)]: (state, { payload }) => {
+      const updatedIdx = map(state.users, "_id").indexOf(payload["_id"]);
+      const newState = Object.assign({}, state);
+      set(newState, `users.${updatedIdx}`, payload);
+
       return {
-        ...state,
+        ...newState,
         user: payload,
         error: null
       };

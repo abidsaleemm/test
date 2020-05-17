@@ -22,7 +22,7 @@ const signup = apiCall({
 
 const updateProfile = apiCall({
   type: UPDATE_PROFILE,
-  method: "post",
+  method: "put",
   path: () => "/auth/update/",
   success: ({ data }) => {
     localStorage.setItem("auth_token", JSON.stringify(data));

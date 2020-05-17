@@ -10,9 +10,9 @@ import {
   ButtonGroup,
   Classes,
   Intent,
-  Colors
+  Button
 } from "@blueprintjs/core";
-import { Table, Column, Cell } from "@blueprintjs/table";
+import { Table, Column, Cell, RenderMode } from "@blueprintjs/table";
 import { DateRangeInput } from "@blueprintjs/datetime";
 import moment from "moment";
 import Header from "components/header";
@@ -20,6 +20,7 @@ import Pagination from "components/pagination";
 import { AddRow, EditRow, DeleteRow } from "components/record";
 import PreferredWorkingHours from "components/preferred_working_hours";
 import { setParams, getRecords } from "store/actions/record";
+import { getUsers } from "store/actions/user";
 import {
   MomentDateRange,
   EnhancedMomentDate
@@ -43,28 +44,38 @@ const style = {
 };
 
 const Dashboard = props => {
-  const { setParams, params, getRecords, records, count } = props;
+  const {
+    setParams,
+    params,
+    getRecords,
+    records,
+    count,
+    me,
+    userParams,
+    getUsers,
+    users,
+    userCount
+  } = props;
   const [startDate, updateStartDate] = useState(null);
   const [endDate, updateEndDate] = useState(null);
 
-  const getColor = row => {
+  const getColor = (row, me) => {
     const pair = {};
     _.toPairs(
       _.groupBy(records, record => moment(record.date).format(DATE_FORMAT))
     ).map(group => {
       pair[group[0]] = _.sumBy(group[1], "hour");
+      return pair;
     });
 
-    if (row >= 0) {
+    if (row >= 0 && me.role < 2) {
       const rowDate = moment(_.get(records, `${row}.date`)).format(DATE_FORMAT);
-      const preferredWorkingHours = _.get(
-        records,
-        `${row}.user.preferredWorkingHours`,
-        0
-      );
+      const preferredWorkingHours = _.get(me, `preferredWorkingHours`, 0);
       return preferredWorkingHours > pair[rowDate]
         ? Intent.DANGER
         : Intent.SUCCESS;
+    } else {
+      return Intent.NONE;
     }
   };
 
@@ -85,6 +96,17 @@ const Dashboard = props => {
   useEffect(() => {
     getRecords({ params });
   }, [params, getRecords]);
+
+  useEffect(() => {
+    if (userParams.rowsPerPage !== userCount && me.role === 2) {
+      getUsers({
+        params: {
+          rowsPerPage: userCount,
+          page: 1
+        }
+      });
+    }
+  }, [users, userCount]);
 
   const handleChangeDateRange = dateRange => {
     const [fromDate, toDate] = dateRange;
@@ -120,23 +142,51 @@ const Dashboard = props => {
               range={[startDate, endDate]}
             />
           </ButtonGroup>
-          <PreferredWorkingHours />
+          <div>
+            <Button icon="export" className={classNames(Classes.DARK, "mr-3")}>
+              Export records
+            </Button>
+            <PreferredWorkingHours />
+          </div>
         </div>
         <Table
           numRows={records.length}
           defaultRowHeight={38}
-          columnWidths={[200, 1000, 150, 180]}
+          columnWidths={
+            me.role < 2
+              ? [50, 0, 200, 950, 150, 180]
+              : [50, 200, 200, 750, 150, 180]
+          }
+          renderMode={RenderMode.NONE}
+          truncated={false}
+          enableRowHeader={false}
         >
+          <Column
+            className={Classes.LARGE}
+            name="No"
+            cellRenderer={row => (
+              <Cell>{row + (params.page - 1) * params.rowsPerPage + 1}</Cell>
+            )}
+          />
+          <Column
+            className={Classes.LARGE}
+            name="User"
+            cellRenderer={row => (
+              <Cell intent={getColor(row, me)}>
+                {records[row].user.firstName + " " + records[row].user.lastName}
+              </Cell>
+            )}
+          />
           <Column
             className={classNames(Classes.LARGE, "pt-1", "pl-2")}
             name="Date"
             cellRenderer={row => (
-              <Cell intent={getColor(row)}>
+              <Cell intent={getColor(row, me)}>
                 <EnhancedMomentDate
                   withTime={false}
                   date={records[row].date}
                   row={row}
-                  intent={getColor(row)}
+                  intent={getColor(row, me)}
                 />
               </Cell>
             )}
@@ -145,22 +195,22 @@ const Dashboard = props => {
             className={Classes.LARGE}
             name="Note"
             cellRenderer={row => (
-              <Cell intent={getColor(row)}>{records[row].note}</Cell>
+              <Cell intent={getColor(row, me)}>{records[row].note}</Cell>
             )}
           />
           <Column
             className={Classes.LARGE}
             name="Working Hours"
             cellRenderer={row => (
-              <Cell intent={getColor(row)}>{records[row].hour}</Cell>
+              <Cell intent={getColor(row, me)}>{records[row].hour}</Cell>
             )}
           />
           <Column
             name="Actions"
             cellRenderer={row => (
-              <Cell intent={getColor(row)} style={style.cell}>
+              <Cell intent={getColor(row, me)} style={style.cell}>
                 <ButtonGroup>
-                  <EditRow selectedRow={records[row]} />
+                  <EditRow selectedRow={records[row]} users={users} />
                   <DeleteRow selectedRow={records[row]} />
                 </ButtonGroup>
               </Cell>
@@ -168,7 +218,7 @@ const Dashboard = props => {
           />
         </Table>
         <Pagination
-          initialPage={1}
+          initialPage={params.page}
           onPageChange={onPageChange}
           setParams={setParams}
           params={params}
@@ -189,13 +239,19 @@ Dashboard.propTypes = {
 
 const mapStateToProps = state => ({
   records: state.record.records,
+  currentRecord: state.record.currentRecord,
   params: state.record.params,
-  count: state.record.count
+  count: state.record.count,
+  me: state.auth.me,
+  userParams: state.user.params,
+  users: state.user.users,
+  userCount: state.user.count
 });
 
 const mapDispatchToProps = {
   setParams: setParams,
-  getRecords: getRecords
+  getRecords: getRecords,
+  getUsers: getUsers
 };
 
 export default compose(connect(mapStateToProps, mapDispatchToProps))(

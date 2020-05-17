@@ -1,4 +1,5 @@
 import { handleActions } from "redux-actions";
+import { map, set } from "lodash-es";
 import { Success, Fail } from "utils/status";
 import {
   GET_RECORDS,
@@ -57,8 +58,12 @@ export default handleActions(
       };
     },
     [Success(UPDATE_RECORD)]: (state, { payload }) => {
+      const updatedIdx = map(state.records, "_id").indexOf(payload["_id"]);
+      const newState = Object.assign({}, state);
+      set(newState, `records.${updatedIdx}`, payload);
+
       return {
-        ...state,
+        ...newState,
         currentRecord: payload,
         error: null
       };
@@ -69,7 +74,7 @@ export default handleActions(
         error: payload.data
       };
     },
-    [Success(DEL_RECORD)]: state => {
+    [Success(DEL_RECORD)]: (state, { payload }) => {
       return {
         ...state,
         count: state.count - 1,

@@ -1,5 +1,5 @@
 import React from "react";
-import { Icon, Tag, Classes, Intent } from "@blueprintjs/core";
+import { Icon, Tag, Classes } from "@blueprintjs/core";
 import classNames from "classnames";
 import moment from "moment";
 
