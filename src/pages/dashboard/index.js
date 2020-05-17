@@ -4,6 +4,8 @@ import { compose } from "redux";
 import PropTypes from "prop-types";
 import classNames from "classnames";
 import _ from "lodash-es";
+import Blob from "blob";
+import download from "downloadjs";
 import {
   Card,
   Elevation,
@@ -19,7 +21,7 @@ import Header from "components/header";
 import Pagination from "components/pagination";
 import { AddRow, EditRow, DeleteRow } from "components/record";
 import PreferredWorkingHours from "components/preferred_working_hours";
-import { setParams, getRecords } from "store/actions/record";
+import { setParams, getRecords, generateRecords } from "store/actions/record";
 import { getUsers } from "store/actions/user";
 import {
   MomentDateRange,
@@ -54,23 +56,25 @@ const Dashboard = props => {
     userParams,
     getUsers,
     users,
-    userCount
+    userCount,
+    generateRecords
   } = props;
   const [startDate, updateStartDate] = useState(null);
   const [endDate, updateEndDate] = useState(null);
 
-  const getColor = (row, me) => {
-    const pair = {};
-    _.toPairs(
-      _.groupBy(records, record => moment(record.date).format(DATE_FORMAT))
-    ).map(group => {
-      pair[group[0]] = _.sumBy(group[1], "hour");
-      return pair;
-    });
+  const pair = {};
+  _.toPairs(
+    _.groupBy(records, record => moment(record.date).format(DATE_FORMAT))
+  ).map(group => {
+    pair[group[0]] = _.sumBy(group[1], "hour");
+    return pair;
+  });
 
+  const preferredWorkingHours = _.get(me, `preferredWorkingHours`, 0);
+
+  const getColor = row => {
     if (row >= 0 && me.role < 2) {
       const rowDate = moment(_.get(records, `${row}.date`)).format(DATE_FORMAT);
-      const preferredWorkingHours = _.get(me, `preferredWorkingHours`, 0);
       return preferredWorkingHours > pair[rowDate]
         ? Intent.DANGER
         : Intent.SUCCESS;
@@ -120,6 +124,78 @@ const Dashboard = props => {
     updateEndDate(toDate);
   };
 
+  const handleExportRecords = () => {
+    generateRecords({
+      params,
+      success: res => {
+        const { records } = res.data;
+        const from = `from <b>${moment(params.from).format(DATE_FORMAT)}</b>`;
+        const to = `to <b>${moment(params.to).format(DATE_FORMAT)}</b>`;
+        const title = `Exported Records ${params.from ? from : ""} ${
+          params.to ? to : ""
+        } `;
+
+        const content = [
+          `
+          <head>
+            <title>Exported Results</title>
+            <meta charset="utf-8">
+            <meta name="viewport" content="width=device-width, initial-scale=1">
+            <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
+            <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+            <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
+          </head>
+          <body>
+
+            <div class="container">
+              <h3 class="text-center">${title} (Preferred Working Hours: <b>${preferredWorkingHours}</b> hours)</h3>
+              <table class="table table-condensed table-bordered">
+                <thead>
+                  <tr>
+                    <th>No</th>
+                    ${me.role === 2 ? "<th>User</th>" : ""}
+                    <th>Date</th>
+                    <th>Total time</th>
+                    <th>Notes</th>
+                  </tr>
+                </thead>
+                <tbody>
+            `
+        ];
+
+        const bodyContents = records.map((record, index) => {
+          const note = record.note.map(note => `<p>${note}</p>`).join("");
+          const renderUserCol =
+            me.role === 2
+              ? `<td>${_.get(record, "user.0.firstName", "") +
+                  " " +
+                  _.get(record, "user.0.lastName", "")}</td>`
+              : "";
+
+          return `<tr class="${
+            record.hour >= preferredWorkingHours ? "success" : "danger"
+          }">
+                    <td>${index + 1}</td>
+                    ${renderUserCol}
+                    <td>${moment(record._id).format(DATE_FORMAT)}</td>
+                    <td>${record.hour} hours</td>
+                    <td>${note}</td>
+                  </tr>`;
+        });
+
+        content.push(bodyContents, [
+          ` </tbody>
+            </table>
+          </div>
+        </body>`
+        ]);
+
+        const blob = new Blob(content, { type: "text/html" });
+        download(blob, "Records_export.html", "text/html");
+      }
+    });
+  };
+
   return (
     <div>
       <Header />
@@ -143,7 +219,11 @@ const Dashboard = props => {
             />
           </ButtonGroup>
           <div>
-            <Button icon="export" className={classNames(Classes.DARK, "mr-3")}>
+            <Button
+              icon="export"
+              className={classNames(Classes.DARK, "mr-3")}
+              onClick={handleExportRecords}
+            >
               Export records
             </Button>
             <PreferredWorkingHours />
@@ -172,7 +252,7 @@ const Dashboard = props => {
             className={Classes.LARGE}
             name="User"
             cellRenderer={row => (
-              <Cell intent={getColor(row, me)}>
+              <Cell intent={getColor(row)}>
                 {records[row].user.firstName + " " + records[row].user.lastName}
               </Cell>
             )}
@@ -181,12 +261,12 @@ const Dashboard = props => {
             className={classNames(Classes.LARGE, "pt-1", "pl-2")}
             name="Date"
             cellRenderer={row => (
-              <Cell intent={getColor(row, me)}>
+              <Cell intent={getColor(row)}>
                 <EnhancedMomentDate
                   withTime={false}
                   date={records[row].date}
                   row={row}
-                  intent={getColor(row, me)}
+                  intent={getColor(row)}
                 />
               </Cell>
             )}
@@ -195,20 +275,20 @@ const Dashboard = props => {
             className={Classes.LARGE}
             name="Note"
             cellRenderer={row => (
-              <Cell intent={getColor(row, me)}>{records[row].note}</Cell>
+              <Cell intent={getColor(row)}>{records[row].note}</Cell>
             )}
           />
           <Column
             className={Classes.LARGE}
             name="Working Hours"
             cellRenderer={row => (
-              <Cell intent={getColor(row, me)}>{records[row].hour}</Cell>
+              <Cell intent={getColor(row)}>{records[row].hour}</Cell>
             )}
           />
           <Column
             name="Actions"
             cellRenderer={row => (
-              <Cell intent={getColor(row, me)} style={style.cell}>
+              <Cell intent={getColor(row)} style={style.cell}>
                 <ButtonGroup>
                   <EditRow selectedRow={records[row]} users={users} />
                   <DeleteRow selectedRow={records[row]} />
@@ -234,7 +314,8 @@ Dashboard.propTypes = {
   getRecords: PropTypes.func.isRequired,
   records: PropTypes.array.isRequired,
   count: PropTypes.number.isRequired,
-  params: PropTypes.object.isRequired
+  params: PropTypes.object.isRequired,
+  generateRecords: PropTypes.func
 };
 
 const mapStateToProps = state => ({
@@ -251,7 +332,8 @@ const mapStateToProps = state => ({
 const mapDispatchToProps = {
   setParams: setParams,
   getRecords: getRecords,
-  getUsers: getUsers
+  getUsers: getUsers,
+  generateRecords: generateRecords
 };
 
 export default compose(connect(mapStateToProps, mapDispatchToProps))(

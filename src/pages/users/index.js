@@ -46,82 +46,86 @@ const Users = props => {
         className={Classes.DARK}
       >
         <AddRow />
-        {params.rowsPerPage === users.length && (
-          <Table
-            className="my-3"
-            numRows={users.length}
-            defaultRowHeight={38}
-            columnWidths={[50, 250, 300, 200, 274, 200]}
-            renderMode={RenderMode.NONE}
-            enableRowHeader={false}
-          >
-            <Column
-              className={Classes.LARGE}
-              name="No"
-              cellRenderer={row => (
-                <Cell>{row + (params.page - 1) * params.rowsPerPage + 1}</Cell>
-              )}
+        {params.rowsPerPage >= users.length && (
+          <>
+            <Table
+              className="my-3"
+              numRows={users.length}
+              defaultRowHeight={38}
+              columnWidths={[50, 250, 300, 200, 274, 200]}
+              renderMode={RenderMode.NONE}
+              enableRowHeader={false}
+            >
+              <Column
+                className={Classes.LARGE}
+                name="No"
+                cellRenderer={row => (
+                  <Cell>
+                    {row + (params.page - 1) * params.rowsPerPage + 1}
+                  </Cell>
+                )}
+              />
+              <Column
+                className={classNames(Classes.LARGE, "pt-1", "pl-2")}
+                name="Name"
+                cellRenderer={row => (
+                  <Cell>
+                    {users[row]
+                      ? users[row].firstName + " " + users[row].lastName
+                      : ""}
+                  </Cell>
+                )}
+              />
+              <Column
+                className={Classes.LARGE}
+                name="Email"
+                cellRenderer={row => (
+                  <Cell>{users[row] ? users[row].email : ""}</Cell>
+                )}
+              />
+              <Column
+                className={Classes.LARGE}
+                name="Role"
+                cellRenderer={row => (
+                  <Cell>
+                    {users[row]
+                      ? upperFirst(toLower(Object.keys(ROLES)[users[row].role]))
+                      : ""}
+                  </Cell>
+                )}
+              />
+              <Column
+                className={Classes.LARGE}
+                name="Preferred Working Hours"
+                cellRenderer={row => (
+                  <Cell>
+                    {users[row] ? users[row].preferredWorkingHours : ""}
+                  </Cell>
+                )}
+              />
+              <Column
+                name="Actions"
+                cellRenderer={row => (
+                  <Cell>
+                    {users[row] && (
+                      <ButtonGroup>
+                        <EditRow selectedRow={users[row]} />
+                        <DeleteRow selectedRow={users[row]} />
+                      </ButtonGroup>
+                    )}
+                  </Cell>
+                )}
+              />
+            </Table>
+            <Pagination
+              initialPage={params.page}
+              onPageChange={onPageChange}
+              setParams={setParams}
+              params={params}
+              count={count}
             />
-            <Column
-              className={classNames(Classes.LARGE, "pt-1", "pl-2")}
-              name="Name"
-              cellRenderer={row => (
-                <Cell>
-                  {users[row]
-                    ? users[row].firstName + " " + users[row].lastName
-                    : ""}
-                </Cell>
-              )}
-            />
-            <Column
-              className={Classes.LARGE}
-              name="Email"
-              cellRenderer={row => (
-                <Cell>{users[row] ? users[row].email : ""}</Cell>
-              )}
-            />
-            <Column
-              className={Classes.LARGE}
-              name="Role"
-              cellRenderer={row => (
-                <Cell>
-                  {users[row]
-                    ? upperFirst(toLower(Object.keys(ROLES)[users[row].role]))
-                    : ""}
-                </Cell>
-              )}
-            />
-            <Column
-              className={Classes.LARGE}
-              name="Preferred Working Hours"
-              cellRenderer={row => (
-                <Cell>
-                  {users[row] ? users[row].preferredWorkingHours : ""}
-                </Cell>
-              )}
-            />
-            <Column
-              name="Actions"
-              cellRenderer={row => (
-                <Cell>
-                  {users[row] && (
-                    <ButtonGroup>
-                      <EditRow selectedRow={users[row]} />
-                      <DeleteRow selectedRow={users[row]} />
-                    </ButtonGroup>
-                  )}
-                </Cell>
-              )}
-            />
-          </Table>
+          </>
         )}
-        <Pagination
-          initialPage={params.page}
-          onPageChange={onPageChange}
-          setParams={setParams}
-          params={params}
-          count={count}
-        />
       </Card>
     </div>
   );

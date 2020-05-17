@@ -155,7 +155,7 @@ async function getSpecificRecord(req, res, next, id) {
   }
 }
 
-async function exportRecords(req, res, next) {
+async function generateRecords(req, res, next) {
   try {
     const { from, to, user } = req.query;
     let where = {};
@@ -185,10 +185,19 @@ async function exportRecords(req, res, next) {
         $match: where
       },
       {
+        $lookup: {
+          from: "users",
+          localField: "user",
+          foreignField: "_id",
+          as: "user"
+        }
+      },
+      {
         $group: {
           _id: "$date",
           note: { $push: "$note" },
-          hour: { $sum: "$hour" }
+          hour: { $sum: "$hour" },
+          user: { $first: "$user" }
         }
       },
       {
@@ -208,5 +217,5 @@ module.exports = {
   list,
   remove,
   getSpecificRecord,
-  exportRecords
+  generateRecords
 };

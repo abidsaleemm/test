@@ -6,7 +6,7 @@ router
   .route("/")
   .get(recordController.list)
   .post(recordController.create);
-router.route("/export").get(recordController.exportRecords);
+router.route("/export").get(recordController.generateRecords);
 router
   .route("/:id")
   .get(recordController.read)

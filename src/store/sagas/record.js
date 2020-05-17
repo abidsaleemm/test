@@ -14,7 +14,7 @@ const getRecords = apiCall({
   path: "/records/"
 });
 
-const exportRecords = apiCall({
+const generateRecords = apiCall({
   type: EXPORT_RECORDS,
   method: "get",
   path: "/records/export"
@@ -43,5 +43,5 @@ export default function* rootSaga() {
   yield takeLatest(CREATE_RECORD, postRecord);
   yield takeLatest(DEL_RECORD, deleteRecord);
   yield takeLatest(UPDATE_RECORD, putRecord);
-  yield takeLatest(EXPORT_RECORDS, exportRecords);
+  yield takeLatest(EXPORT_RECORDS, generateRecords);
 }

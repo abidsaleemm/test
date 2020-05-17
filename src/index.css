@@ -38,3 +38,11 @@ code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, "Courier New",
     monospace;
 }
+
+.bp3-dark .bp3-table-cell.bp3-intent-success {
+  background: rgba(15, 153, 96, 0.3);
+}
+
+.bp3-dark .bp3-table-cell.bp3-intent-danger {
+  background: rgba(219, 55, 55, 0.3);
+}
