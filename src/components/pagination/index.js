@@ -99,6 +99,7 @@ const Pagination = ({
       dispatch({ type: "PAGE_CHANGE", page: state.currentPage - 1 });
       onPageChange(state.currentPage - 1);
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [count]);
 
   const handleClick = item => {
@@ -121,6 +122,7 @@ const Pagination = ({
             return (
               <MenuItem
                 active={modifiers.active}
+                tagName="button"
                 label={item.toString()}
                 onClick={handleClick}
                 key={item}

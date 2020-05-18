@@ -6,13 +6,16 @@ import classNames from "classnames";
 import _ from "lodash-es";
 import Blob from "blob";
 import download from "downloadjs";
+import { useHistory } from "react-router-dom";
 import {
   Card,
   Elevation,
   ButtonGroup,
   Classes,
   Intent,
-  Button
+  Button,
+  Tooltip,
+  Breadcrumb
 } from "@blueprintjs/core";
 import { Table, Column, Cell, RenderMode } from "@blueprintjs/table";
 import { DateRangeInput } from "@blueprintjs/datetime";
@@ -28,7 +31,7 @@ import {
   EnhancedMomentDate
 } from "components/moment_daterange";
 import withToast from "hoc/withToast";
-import { DATE_FORMAT } from "constants/index";
+import { DATE_FORMAT, ROLES } from "constants/index";
 
 const style = {
   card: {
@@ -70,10 +73,10 @@ const Dashboard = props => {
     return pair;
   });
 
-  const preferredWorkingHours = _.get(me, `preferredWorkingHours`, 0);
+  const preferredWorkingHours = _.get(me, "preferredWorkingHours", 0);
 
   const getColor = row => {
-    if (row >= 0 && me.role < 2) {
+    if (row >= 0 && me.role < ROLES.ADMIN) {
       const rowDate = moment(_.get(records, `${row}.date`)).format(DATE_FORMAT);
       return preferredWorkingHours > pair[rowDate]
         ? Intent.DANGER
@@ -102,7 +105,7 @@ const Dashboard = props => {
   }, [params, getRecords]);
 
   useEffect(() => {
-    if (userParams.rowsPerPage !== userCount && me.role === 2) {
+    if (userParams.rowsPerPage !== userCount && me.role === ROLES.ADMIN) {
       getUsers({
         params: {
           rowsPerPage: userCount,
@@ -110,7 +113,10 @@ const Dashboard = props => {
         }
       });
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [users, userCount]);
+
+  const history = useHistory();
 
   const handleChangeDateRange = dateRange => {
     const [fromDate, toDate] = dateRange;
@@ -135,6 +141,11 @@ const Dashboard = props => {
           params.to ? to : ""
         } `;
 
+        const additionalTitle =
+          me.role < ROLES.ADMIN
+            ? ` (Preferred Working Hours: <b>${preferredWorkingHours}</b> hours)`
+            : "";
+
         const content = [
           `
           <head>
@@ -148,12 +159,12 @@ const Dashboard = props => {
           <body>
 
             <div class="container">
-              <h3 class="text-center">${title} (Preferred Working Hours: <b>${preferredWorkingHours}</b> hours)</h3>
+              <h3 class="text-center">${title}${additionalTitle}</h3>
               <table class="table table-condensed table-bordered">
                 <thead>
                   <tr>
                     <th>No</th>
-                    ${me.role === 2 ? "<th>User</th>" : ""}
+                    ${me.role === ROLES.ADMIN ? "<th>User</th>" : ""}
                     <th>Date</th>
                     <th>Total time</th>
                     <th>Notes</th>
@@ -166,14 +177,14 @@ const Dashboard = props => {
         const bodyContents = records.map((record, index) => {
           const note = record.note.map(note => `<p>${note}</p>`).join("");
           const renderUserCol =
-            me.role === 2
+            me.role === ROLES.ADMIN
               ? `<td>${_.get(record, "user.0.firstName", "") +
                   " " +
                   _.get(record, "user.0.lastName", "")}</td>`
               : "";
 
           return `<tr class="${
-            me.role < 2
+            me.role < ROLES.ADMIN
               ? record.hour >= preferredWorkingHours
                 ? "success"
                 : "danger"
@@ -208,6 +219,13 @@ const Dashboard = props => {
         className={Classes.DARK}
         style={style.card}
       >
+        <Breadcrumb
+          icon="chevron-right"
+          text="Records"
+          onClick={() => {
+            history.push("/dashboard");
+          }}
+        />
         <div className={Classes.NAVBAR_GROUP} style={style.cardChild}>
           <AddRow />
           <ButtonGroup>
@@ -223,91 +241,109 @@ const Dashboard = props => {
             />
           </ButtonGroup>
           <div>
-            <Button
-              icon="export"
-              className={classNames(Classes.DARK, "mr-3")}
-              onClick={handleExportRecords}
+            <Tooltip
+              content={!records.length ? "There's no record to export." : ""}
             >
-              Export records
-            </Button>
-            <PreferredWorkingHours />
+              <Button
+                icon="export"
+                className={classNames(Classes.DARK, "mr-3")}
+                onClick={handleExportRecords}
+                disabled={!records.length}
+              >
+                Export records
+              </Button>
+            </Tooltip>
+            {me.role < ROLES.ADMIN && <PreferredWorkingHours />}
           </div>
         </div>
-        <Table
-          numRows={records.length}
-          defaultRowHeight={38}
-          columnWidths={
-            me.role < 2
-              ? [50, 0, 200, 950, 150, 180]
-              : [50, 200, 200, 750, 150, 180]
-          }
-          renderMode={RenderMode.NONE}
-          truncated={false}
-          enableRowHeader={false}
-        >
-          <Column
-            className={Classes.LARGE}
-            name="No"
-            cellRenderer={row => (
-              <Cell>{row + (params.page - 1) * params.rowsPerPage + 1}</Cell>
-            )}
-          />
-          <Column
-            className={Classes.LARGE}
-            name="User"
-            cellRenderer={row => (
-              <Cell intent={getColor(row)}>
-                {records[row].user.firstName + " " + records[row].user.lastName}
-              </Cell>
-            )}
-          />
-          <Column
-            className={classNames(Classes.LARGE, "pt-1", "pl-2")}
-            name="Date"
-            cellRenderer={row => (
-              <Cell intent={getColor(row)}>
-                <EnhancedMomentDate
-                  withTime={false}
-                  date={records[row].date}
-                  row={row}
-                  intent={getColor(row)}
-                />
-              </Cell>
-            )}
-          />
-          <Column
-            className={Classes.LARGE}
-            name="Note"
-            cellRenderer={row => (
-              <Cell intent={getColor(row)}>{records[row].note}</Cell>
-            )}
-          />
-          <Column
-            className={Classes.LARGE}
-            name="Working Hours"
-            cellRenderer={row => (
-              <Cell intent={getColor(row)}>{records[row].hour}</Cell>
-            )}
-          />
-          <Column
-            name="Actions"
-            cellRenderer={row => (
-              <Cell intent={getColor(row)} style={style.cell}>
-                <ButtonGroup>
-                  <EditRow selectedRow={records[row]} users={users} />
-                  <DeleteRow selectedRow={records[row]} />
-                </ButtonGroup>
-              </Cell>
-            )}
-          />
-        </Table>
-        <Pagination
-          initialPage={params.page}
-          onPageChange={onPageChange}
-          setParams={setParams}
-          params={params}
-          count={count}
-        />
+        {!!records.length && (
+          <>
+            <Table
+              numRows={records.length}
+              defaultRowHeight={38}
+              columnWidths={
+                me.role < ROLES.ADMIN
+                  ? [50, 0, 200, 950, 150, 180]
+                  : [50, 200, 200, 750, 150, 180]
+              }
+              renderMode={RenderMode.NONE}
+              truncated={false}
+              enableRowHeader={false}
+            >
+              <Column
+                className={Classes.LARGE}
+                name="No"
+                cellRenderer={row => (
+                  <Cell>
+                    {row + (params.page - 1) * params.rowsPerPage + 1}
+                  </Cell>
+                )}
+              />
+              <Column
+                className={Classes.LARGE}
+                name="User"
+                cellRenderer={row => (
+                  <Cell intent={getColor(row)}>
+                    {records[row].user.firstName +
+                      " " +
+                      records[row].user.lastName}
+                  </Cell>
+                )}
+              />
+              <Column
+                className={classNames(Classes.LARGE, "pt-1", "pl-2")}
+                name="Date"
+                cellRenderer={row => (
+                  <Cell intent={getColor(row)}>
+                    <EnhancedMomentDate
+                      withTime={false}
+                      date={records[row].date}
+                      row={row}
+                      intent={getColor(row)}
+                    />
+                  </Cell>
+                )}
+              />
+              <Column
+                className={Classes.LARGE}
+                name="Note"
+                cellRenderer={row => (
+                  <Cell intent={getColor(row)}>{records[row].note}</Cell>
+                )}
+              />
+              <Column
+                className={Classes.LARGE}
+                name="Working Hours"
+                cellRenderer={row => (
+                  <Cell intent={getColor(row)}>{records[row].hour}</Cell>
+                )}
+              />
+              <Column
+                name="Actions"
+                cellRenderer={row => (
+                  <Cell intent={getColor(row)} style={style.cell}>
+                    <ButtonGroup>
+                      <EditRow selectedRow={records[row]} users={users} />
+                      <DeleteRow selectedRow={records[row]} />
+                    </ButtonGroup>
+                  </Cell>
+                )}
+              />
+            </Table>
+            <Pagination
+              initialPage={params.page}
+              onPageChange={onPageChange}
+              setParams={setParams}
+              params={params}
+              count={count}
+            />
+          </>
+        )}
+        {!records.length && (
+          <div className="bp3-non-ideal-state bp3-hotkey-column">
+            No records found
+          </div>
+        )}
       </Card>
     </div>
   );

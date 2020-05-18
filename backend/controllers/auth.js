@@ -5,11 +5,21 @@ const {
   notFound,
   invalidCredential,
   serverError,
-  userAlreadyRegistered
+  userAlreadyRegistered,
+  badRequest
 } = require("../constants");
 
 async function login(req, res, next) {
   try {
+    const { email = "", password = "" } = req.body || {};
+    if (!req.body.email) {
+      return res.status(badRequest.code).send("Email is empty.");
+    } else if (req.body.password.length < 8) {
+      return res
+        .status(badRequest.code)
+        .send("Password should be at least 8 letters.");
+    }
+
     const user = await User.findOne({ email: req.body.email })
       .select(
         "_id password email firstName lastName role preferredWorkingHours"

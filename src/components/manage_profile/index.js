@@ -88,13 +88,14 @@ const ManageProfile = props => {
             {({ submitForm, isSubmitting, errors }) => {
               return (
                 <Form>
-                  {fieldList.map(field => {
+                  {fieldList.map((field, index) => {
                     return (
                       <FormGroup
                         helperText={errors[field]}
                         intent={errors[field] ? Intent.DANGER : Intent.NONE}
                         label={USER_FIELDS[field].form_label}
                         labelFor={USER_FIELDS[field].id}
+                        key={index}
                       >
                         <Field {...USER_FIELDS[field]} />
                       </FormGroup>

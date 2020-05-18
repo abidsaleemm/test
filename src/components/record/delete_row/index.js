@@ -42,11 +42,11 @@ const DeleteRow = props => {
         icon="trash"
         isOpen={isOpen}
         onClose={() => toggleDialog(false)}
-        title="Delete Entry"
+        title="Delete Record"
         className={Classes.DARK}
       >
         <div className={Classes.DIALOG_BODY}>
-          Would you like to remove the selected entry?
+          Would you like to remove the selected record?
         </div>
         <div className={Classes.DIALOG_FOOTER}>
           <div className={Classes.DIALOG_FOOTER_ACTIONS}>

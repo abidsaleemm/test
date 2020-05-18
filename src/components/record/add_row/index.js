@@ -51,6 +51,7 @@ const AddRow = props => {
       setParams({ page: 1, rowsPerPage: count });
       getUsers({ params: userParams });
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [users, count]);
 
   const handleClick = item => {
@@ -106,7 +107,7 @@ const AddRow = props => {
         icon="add"
         isOpen={isOpen}
         onClose={() => toggleDialog(false)}
-        title="Add Entry"
+        title="Add Record"
         className={Classes.DARK}
       >
         <div className={Classes.DIALOG_BODY}>

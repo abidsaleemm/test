@@ -20,6 +20,7 @@ const SelectUser = ({ ...props }) => {
             return (
               <MenuItem
                 active={modifiers.active}
+                tagName="button"
                 label={item.firstName + " " + item.lastName}
                 onClick={handleClick}
                 key={item.id}

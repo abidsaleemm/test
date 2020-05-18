@@ -2,7 +2,14 @@ import React, { useEffect } from "react";
 import { connect } from "react-redux";
 import { compose } from "redux";
 import classNames from "classnames";
-import { Classes, ButtonGroup, Card, Elevation } from "@blueprintjs/core";
+import { useHistory } from "react-router-dom";
+import {
+  Classes,
+  ButtonGroup,
+  Card,
+  Elevation,
+  Breadcrumb
+} from "@blueprintjs/core";
 import { Table, Column, Cell, RenderMode } from "@blueprintjs/table";
 import { upperFirst, toLower } from "lodash-es";
 import Header from "components/header";
@@ -11,7 +18,6 @@ import { ROLES } from "constants/index";
 import withToast from "hoc/withToast";
 import Pagination from "components/pagination";
 import { AddRow, EditRow, DeleteRow } from "components/user";
-import { getRecords } from "store/actions/record";
 
 const style = {
   card: {
@@ -27,6 +33,7 @@ const Users = props => {
 
   useEffect(() => {
     setParams({ page: 1, rowsPerPage: 5 });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   useEffect(() => {
@@ -37,6 +44,8 @@ const Users = props => {
     setParams({ page });
   };
 
+  const history = useHistory();
+
   return (
     <div>
       <Header />
@@ -45,6 +54,15 @@ const Users = props => {
         style={style.card}
         className={Classes.DARK}
       >
+        <Breadcrumb
+          icon="chevron-right"
+          text="Users"
+          onClick={() => {
+            history.push("/users");
+          }}
+        />
+        <br />
+        <br />
         <AddRow />
         {params.rowsPerPage >= users.length && (
           <>
@@ -134,7 +152,8 @@ const Users = props => {
 const mapStateToProps = state => ({
   users: state.user.users,
   params: state.user.params,
-  count: state.user.count
+  count: state.user.count,
+  user: state.user.user
 });
 
 const mapDispatchToProps = {

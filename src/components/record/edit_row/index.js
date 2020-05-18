@@ -20,15 +20,7 @@ import { DATE_FORMAT, RECORD_FIELDS } from "constants/index";
 import SelectUser from "components/select_user";
 
 const EditRow = props => {
-  const {
-    updateRecord,
-    params,
-    getRecords,
-    showToast,
-    selectedRow,
-    me,
-    users
-  } = props;
+  const { updateRecord, showToast, selectedRow, me, users } = props;
   const [isOpen, toggleDialog] = useState(false);
   const [toDate, selectDate] = useState(new Date(selectedRow.date));
 
@@ -104,7 +96,7 @@ const EditRow = props => {
         icon="edit"
         isOpen={isOpen}
         onClose={() => toggleDialog(false)}
-        title="Edit Entry"
+        title="Edit Record"
         className={Classes.DARK}
       >
         <div className={Classes.DIALOG_BODY}>

@@ -18,7 +18,7 @@ module.exports = {
   },
   userAlreadyRegistered: {
     message: "User already registered.",
-    code: 400
+    code: 409
   },
   noOverDailyHours: {
     message: "Couldn't work more than 24 hours a day.",
@@ -31,5 +31,9 @@ module.exports = {
   accessDenied: {
     message: "Access denied. No token provided.",
     code: 401
+  },
+  badRequest: {
+    message: "Bad request",
+    code: 400
   }
 };

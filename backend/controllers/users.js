@@ -26,7 +26,8 @@ async function list(req, res, next) {
     const users = await User.find(where)
       .skip((page - 1) * rowsPerPage)
       .limit(parseInt(rowsPerPage))
-      .select("-password");
+      .select("-password")
+      .sort("-role");
     const count = await User.countDocuments(where);
 
     res.json({ users, count });

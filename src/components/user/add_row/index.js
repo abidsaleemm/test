@@ -19,7 +19,7 @@ import withToast from "hoc/withToast";
 import { USER_FIELDS } from "constants/index";
 
 const AddRow = props => {
-  const { createUser, params, getUsers, showToast } = props;
+  const { createUser, showToast } = props;
   const [isOpen, toggleDialog] = useState(false);
   const [value, setValue] = useState(0);
   const handleValueChange = handleNumberChange(value => setValue(value));

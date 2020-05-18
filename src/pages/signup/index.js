@@ -204,6 +204,4 @@ const mapDispatchToProps = {
   showToast: showToast
 };
 
-export default compose(connect(() => {}, mapDispatchToProps))(
-  withToast(SignUp)
-);
+export default compose(connect(null, mapDispatchToProps))(withToast(SignUp));

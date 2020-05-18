@@ -36,7 +36,7 @@ function read(req, res, next) {
 
 async function list(req, res, next) {
   try {
-    const { from, to, page = 1, rowsPerPage = 10, user } = req.query;
+    const { from, to, page = 1, rowsPerPage = 5, user } = req.query;
 
     let where = {};
     if (req.user.role < Roles.ADMIN) {
@@ -62,7 +62,12 @@ async function list(req, res, next) {
       where["user"] = ObjectId(user);
     }
 
-    if (!isInteger(toNumber(page)) || !isInteger(toNumber(rowsPerPage))) {
+    if (
+      !isInteger(toNumber(page)) ||
+      !isInteger(toNumber(rowsPerPage)) ||
+      toNumber(page) <= 0 ||
+      toNumber(page) <= 0
+    ) {
       return res
         .status(422)
         .send("Page and rows per page must be positive integer.");
