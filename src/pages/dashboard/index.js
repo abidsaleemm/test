@@ -173,7 +173,11 @@ const Dashboard = props => {
               : "";
 
           return `<tr class="${
-            record.hour >= preferredWorkingHours ? "success" : "danger"
+            me.role < 2
+              ? record.hour >= preferredWorkingHours
+                ? "success"
+                : "danger"
+              : "none"
           }">
                     <td>${index + 1}</td>
                     ${renderUserCol}

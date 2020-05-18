@@ -1,37 +1,32 @@
-import React, { useState } from "react";
+import React from "react";
 import { connect } from "react-redux";
 import { compose } from "redux";
 import { Formik, Form, Field } from "formik";
-import * as Yup from "yup";
 import _ from "lodash-es";
 import {
   Button,
   Dialog,
   Intent,
   Classes,
-  FormGroup,
-  ProgressBar
+  ProgressBar,
+  FormGroup
 } from "@blueprintjs/core";
-import { handleNumberChange } from "@blueprintjs/docs-theme";
-import { updateUser, getUsers } from "store/actions/user";
+import * as Yup from "yup";
+import { updateProfile } from "store/actions/auth";
 import { showToast } from "store/actions/toast";
 import withToast from "hoc/withToast";
 import { USER_FIELDS } from "constants/index";
 
-const EditRow = props => {
-  const { updateUser, showToast, selectedRow } = props;
-  const [isOpen, toggleDialog] = useState(false);
-  const [value, setValue] = useState(selectedRow.role);
-  const handleValueChange = handleNumberChange(value => setValue(value));
+const fieldList = [
+  "firstName",
+  "lastName",
+  "email",
+  "password",
+  "preferredWorkingHours"
+];
 
-  const fieldList = [
-    "firstName",
-    "lastName",
-    "email",
-    "password",
-    "role",
-    "preferredWorkingHours"
-  ];
+const ManageProfile = props => {
+  const { updateProfile, isOpen, toggleDialog, me, showToast } = props;
 
   const validation = {};
   _.toPairs(_.pick(USER_FIELDS, fieldList)).map(
@@ -40,17 +35,15 @@ const EditRow = props => {
   const validateSchema = Yup.object().shape(validation);
 
   const handleSubmit = (values, actions) => {
-    values["role"] = value;
     if (values["password"].includes("******")) {
       values = _.omit(values, ["password"]);
     }
-    updateUser({
-      id: selectedRow._id,
+    updateProfile({
       body: values,
       success: () => {
         actions.setSubmitting(false);
         showToast({
-          message: "Successfully updated selected user!",
+          message: "Your profile has been updated!",
           intent: Intent.SUCCESS,
           timeout: 3000
         });
@@ -58,40 +51,32 @@ const EditRow = props => {
       },
       fail: err => {
         actions.setSubmitting(false);
-        showToast({
-          message: err.response.data,
-          intent: Intent.DANGER
-        });
+        showToast({ message: err.response.data, status: Intent.DANGER });
+        toggleDialog(false);
       }
     });
   };
 
-  const passToProps = {
-    onChange: handleValueChange,
-    selectedValue: value
-  };
-
   const initialValue = {};
   _.toPairs(_.pick(USER_FIELDS, fieldList)).map(
-    a => (initialValue[a[0]] = _.get(selectedRow, a[0], ""))
+    a => (initialValue[a[0]] = _.get(me, a[0], ""))
   );
   initialValue["password"] = "********";
 
   return (
     <>
       <Button
-        icon="edit"
+        icon="user"
         className={Classes.MINIMAL}
-        intent={Intent.PRIMARY}
-        onClick={() => toggleDialog(true)}
-      >
-        Edit
-      </Button>
+        onClick={() => {
+          toggleDialog(true);
+        }}
+      ></Button>
       <Dialog
         icon="edit"
         isOpen={isOpen}
         onClose={() => toggleDialog(false)}
-        title="Edit User"
+        title="Edit Profile"
         className={Classes.DARK}
       >
         <div className={Classes.DIALOG_BODY}>
@@ -111,10 +96,7 @@ const EditRow = props => {
                         label={USER_FIELDS[field].form_label}
                         labelFor={USER_FIELDS[field].id}
                       >
-                        <Field
-                          {...USER_FIELDS[field]}
-                          {...(field === "role" ? passToProps : null)}
-                        />
+                        <Field {...USER_FIELDS[field]} />
                       </FormGroup>
                     );
                   })}
@@ -141,15 +123,15 @@ const EditRow = props => {
 };
 
 const mapStateToProps = state => ({
-  params: state.user.params
+  params: state.user.params,
+  me: state.auth.me
 });
 
 const mapDispatchToProps = {
-  updateUser: updateUser,
-  getUsers: getUsers,
+  updateProfile: updateProfile,
   showToast: showToast
 };
 
 export default compose(connect(mapStateToProps, mapDispatchToProps))(
-  withToast(EditRow)
+  withToast(ManageProfile)
 );
