@@ -132,6 +132,15 @@ const Dashboard = props => {
     updateEndDate(toDate);
   };
 
+  const removeRange = () => {
+    setParams({
+      from: null,
+      to: null
+    });
+    updateStartDate(null);
+    updateEndDate(null);
+  };
+
   const handleExportRecords = () => {
     generateRecords({
       params,
@@ -268,10 +277,16 @@ const Dashboard = props => {
               />
             )}
             <DateRangeInput
-              className="mx-3"
+              className="ml-3"
               value={[startDate, endDate]}
               onChange={handleChangeDateRange}
               {...jsDateFormatter}
+            />
+            <Button
+              icon="cross"
+              className={classNames(Classes.DARK, "mr-3", Classes.MINIMAL)}
+              onClick={removeRange}
+              intent={Intent.DANGER}
             />
             <MomentDateRange
               className={classNames(Classes.DIALOG_FOOTER_ACTIONS)}

@@ -58,12 +58,8 @@ export default handleActions(
       };
     },
     [Success(UPDATE_RECORD)]: (state, { payload }) => {
-      const updatedIdx = map(state.records, "_id").indexOf(payload["_id"]);
-      const newState = Object.assign({}, state);
-      set(newState, `records.${updatedIdx}`, payload);
-
       return {
-        ...newState,
+        ...state,
         currentRecord: payload,
         error: null
       };

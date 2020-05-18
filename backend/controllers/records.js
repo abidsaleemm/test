@@ -162,7 +162,7 @@ async function getSpecificRecord(req, res, next, id) {
 
 async function generateRecords(req, res, next) {
   try {
-    const { from, to, user } = req.query;
+    const { from, to, user = [] } = req.query;
     let where = {};
     if (req.user.role < Roles.ADMIN) where = { user: ObjectId(req.user._id) };
 
@@ -176,8 +176,8 @@ async function generateRecords(req, res, next) {
       return res.status(422).send("Start date must be before end date.");
     }
 
-    if (user && req.user.role === Roles.ADMIN) {
-      where["user"] = ObjectId(user);
+    if (user.length && req.user.role === Roles.ADMIN) {
+      where["user"] = { $in: user.map(a => ObjectId(a)) };
     }
 
     if (from && to)

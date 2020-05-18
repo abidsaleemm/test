@@ -6,13 +6,14 @@ import { delRecord, getRecords } from "store/actions/record";
 import { showToast } from "store/actions/toast";
 
 const DeleteRow = props => {
-  const { delRecord, showToast, selectedRow } = props;
+  const { delRecord, showToast, selectedRow, params, getRecords } = props;
   const [isOpen, toggleDialog] = useState(false);
 
   const deleteRow = () => {
     delRecord({
       id: selectedRow._id,
       success: () => {
+        getRecords({ params });
         showToast({
           message: "Selected Record removed.",
           intent: Intent.SUCCESS

@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { connect } from "react-redux";
 import { compose } from "redux";
 import * as Yup from "yup";
@@ -23,6 +23,10 @@ const AddRow = props => {
   const [isOpen, toggleDialog] = useState(false);
   const [value, setValue] = useState(0);
   const handleValueChange = handleNumberChange(value => setValue(value));
+
+  useEffect(() => {
+    setValue(0);
+  }, [isOpen]);
 
   const fieldList = [
     "firstName",

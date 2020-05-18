@@ -54,6 +54,10 @@ const AddRow = props => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [users, count]);
 
+  useEffect(() => {
+    selectDate(new Date());
+  }, [isOpen]);
+
   const handleClick = item => {
     const index = map(users, "_id").indexOf(item._id);
     setUserIndex(index);

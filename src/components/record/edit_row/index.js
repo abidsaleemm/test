@@ -20,7 +20,15 @@ import { DATE_FORMAT, RECORD_FIELDS } from "constants/index";
 import SelectUser from "components/select_user";
 
 const EditRow = props => {
-  const { updateRecord, showToast, selectedRow, me, users } = props;
+  const {
+    updateRecord,
+    showToast,
+    selectedRow,
+    me,
+    users,
+    params,
+    getRecords
+  } = props;
   const [isOpen, toggleDialog] = useState(false);
   const [toDate, selectDate] = useState(new Date(selectedRow.date));
 
@@ -29,6 +37,10 @@ const EditRow = props => {
   useEffect(() => {
     setUserIndex(map(users, "_id").indexOf(selectedRow.user["_id"]));
   }, [selectedRow, users]);
+
+  useEffect(() => {
+    selectDate(new Date(selectedRow.date));
+  }, [isOpen]);
 
   const fieldList = ["date", "note", "hour"];
 
@@ -53,6 +65,10 @@ const EditRow = props => {
       body: values,
       success: () => {
         actions.setSubmitting(false);
+        getRecords({
+          params
+        });
+
         showToast({
           message: "Successfully updated the row to table!",
           intent: Intent.SUCCESS,

@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { connect } from "react-redux";
 import { compose } from "redux";
 import { Formik, Form, Field } from "formik";
@@ -23,6 +23,10 @@ const EditRow = props => {
   const [isOpen, toggleDialog] = useState(false);
   const [value, setValue] = useState(selectedRow.role);
   const handleValueChange = handleNumberChange(value => setValue(value));
+
+  useEffect(() => {
+    setValue(selectedRow.role);
+  }, [isOpen]);
 
   const fieldList = [
     "firstName",
