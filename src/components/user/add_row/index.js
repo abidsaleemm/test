@@ -19,7 +19,7 @@ import withToast from "hoc/withToast";
 import { USER_FIELDS } from "constants/index";
 
 const AddRow = props => {
-  const { createUser, showToast } = props;
+  const { createUser, showToast, params, getUsers } = props;
   const [isOpen, toggleDialog] = useState(false);
   const [value, setValue] = useState(0);
   const handleValueChange = handleNumberChange(value => setValue(value));
@@ -45,6 +45,7 @@ const AddRow = props => {
       body: values,
       success: () => {
         actions.setSubmitting(false);
+        getUsers({ params });
         showToast({
           message: "Successfully added one user!",
           intent: Intent.SUCCESS,

@@ -256,18 +256,19 @@ const Dashboard = props => {
         />
         <div className={Classes.NAVBAR_GROUP} style={style.cardChild}>
           <AddRow />
-          {me.role === ROLES.ADMIN && (
-            <MultiSelectUser
-              users={users}
-              selectedUsers={selectedUsers}
-              handleClick={handleClick}
-              handleClear={handleClear}
-              handleTagRemove={handleTagRemove}
-            />
-          )}
+
           <ButtonGroup>
+            {me.role === ROLES.ADMIN && (
+              <MultiSelectUser
+                users={users}
+                selectedUsers={selectedUsers}
+                handleClick={handleClick}
+                handleClear={handleClear}
+                handleTagRemove={handleTagRemove}
+              />
+            )}
             <DateRangeInput
-              className="mr-3"
+              className="mx-3"
               value={[startDate, endDate]}
               onChange={handleChangeDateRange}
               {...jsDateFormatter}
