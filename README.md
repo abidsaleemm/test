@@ -1,4 +1,6 @@
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+# Time Management App
+
+This time management project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
 
 ## Available Scripts
 
@@ -7,7 +9,7 @@ In the project directory, you can run:
 ### `npm start`
 
 Runs the app in the development mode.<br />
-Open [http://localhost:3000](http://localhost:3000) to view it in the browser.
+Open [http://localhost:3001](http://localhost:3001) to view it in the browser.
 
 The page will reload if you make edits.<br />
 You will also see any lint errors in the console.
@@ -27,42 +29,40 @@ Your app is ready to be deployed!
 
 See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
 
-### `npm run eject`
+### `npm lint`
 
-**Note: this is a one-way operation. Once you `eject`, you can’t go back!**
+Launches the eslint to check to analyse code.<br />
 
-If you aren’t satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+## Front-End Architecture
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you’re on your own.
+```
+├─ src/components          - Reusable React components are declared here.
+├─ src/constants           - Constant variables and form settings including props are declared here.
+├─ src/hoc                 - HOC components can go here.
+├─ src/pages               - Pages can go here.
+├─ src/store               - Redux actions/reducers/saga here.
+├─ src/utils               - Reusable utilized functions.
+├─ src/routes              - Hosted routes existed in whole time management app.
+```
 
-You don’t have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn’t feel obligated to use this feature. However we understand that this tool wouldn’t be useful if you couldn’t customize it when you are ready for it.
+## Back-End Architecture
 
-## Learn More
+```
+├─ backend/constants	   - Constant variables are declared here.
+├─ backend/conrollers      - Conrollers are declared here.
+├─ backend/middleware      - Middlewares can go here.
+├─ backend/models          - Models can go here.
+├─ src/utils               - Reusable utilized functions.
+├─ src/routes              - Hosted routes existed in backend app.
+```
 
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
+## Frameworks and libraries used:
 
-To learn React, check out the [React documentation](https://reactjs.org/).
-
-### Code Splitting
-
-This section has moved here: https://facebook.github.io/create-react-app/docs/code-splitting
-
-### Analyzing the Bundle Size
-
-This section has moved here: https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size
-
-### Making a Progressive Web App
-
-This section has moved here: https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app
-
-### Advanced Configuration
-
-This section has moved here: https://facebook.github.io/create-react-app/docs/advanced-configuration
-
-### Deployment
-
-This section has moved here: https://facebook.github.io/create-react-app/docs/deployment
-
-### `npm run build` fails to minify
-
-This section has moved here: https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify
+- Node - https://nodejs.org
+- Lodash - https://lodash.com/docs/
+- Express - https://expressjs.com/
+- React - https://facebook.github.io/react/
+- Redux - https://redux.js.org/
+- Redux Saga - https://redux-saga.js.org/
+- React Blueprint JS - https://blueprintjs.com/
+- Mongo DB - https://docs.mongodb.com/
