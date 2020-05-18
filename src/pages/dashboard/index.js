@@ -24,12 +24,13 @@ import Header from "components/header";
 import Pagination from "components/pagination";
 import { AddRow, EditRow, DeleteRow } from "components/record";
 import PreferredWorkingHours from "components/preferred_working_hours";
-import { setParams, getRecords, generateRecords } from "store/actions/record";
 import { getUsers } from "store/actions/user";
 import {
   MomentDateRange,
   EnhancedMomentDate
 } from "components/moment_daterange";
+import MultiSelectUser from "components/multi_select_user";
+import { setParams, getRecords, generateRecords } from "store/actions/record";
 import withToast from "hoc/withToast";
 import { DATE_FORMAT, ROLES } from "constants/index";
 
@@ -64,6 +65,7 @@ const Dashboard = props => {
   } = props;
   const [startDate, updateStartDate] = useState(null);
   const [endDate, updateEndDate] = useState(null);
+  const [selectedUsers, setSelectedUsers] = useState([]);
 
   const pair = {};
   _.toPairs(
@@ -211,6 +213,32 @@ const Dashboard = props => {
     });
   };
 
+  const handleClick = item => {
+    const enhancedUsers = _.map(selectedUsers, "_id").includes(item["_id"])
+      ? _.filter(selectedUsers, user => user["_id"] !== item["_id"])
+      : [...selectedUsers, item];
+    setSelectedUsers(enhancedUsers);
+    setParams({
+      user: _.map(enhancedUsers, "_id")
+    });
+  };
+
+  const handleTagRemove = (item, index) => {
+    const clonedUsers = Object.assign([], selectedUsers);
+    clonedUsers.splice(index, 1);
+    setSelectedUsers(clonedUsers);
+    setParams({
+      user: _.map(clonedUsers, "_id")
+    });
+  };
+
+  const handleClear = () => {
+    setSelectedUsers([]);
+    setParams({
+      user: []
+    });
+  };
+
   return (
     <div>
       <Header />
@@ -228,6 +256,15 @@ const Dashboard = props => {
         />
         <div className={Classes.NAVBAR_GROUP} style={style.cardChild}>
           <AddRow />
+          {me.role === ROLES.ADMIN && (
+            <MultiSelectUser
+              users={users}
+              selectedUsers={selectedUsers}
+              handleClick={handleClick}
+              handleClear={handleClear}
+              handleTagRemove={handleTagRemove}
+            />
+          )}
           <ButtonGroup>
             <DateRangeInput
               className="mr-3"

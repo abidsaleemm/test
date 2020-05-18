@@ -20,7 +20,7 @@ const initialState = {
     rowsPerPage: 5,
     from: null,
     to: null,
-    user: null
+    user: []
   },
   error: ""
 };

@@ -15,18 +15,15 @@ import * as Yup from "yup";
 import { updateProfile } from "store/actions/auth";
 import { showToast } from "store/actions/toast";
 import withToast from "hoc/withToast";
-import { USER_FIELDS } from "constants/index";
-
-const fieldList = [
-  "firstName",
-  "lastName",
-  "email",
-  "password",
-  "preferredWorkingHours"
-];
+import { USER_FIELDS, ROLES } from "constants/index";
 
 const ManageProfile = props => {
   const { updateProfile, isOpen, toggleDialog, me, showToast } = props;
+
+  const fieldList =
+    me.role < ROLES.ADMIN
+      ? ["firstName", "lastName", "email", "password", "preferredWorkingHours"]
+      : ["firstName", "lastName", "email", "password"];
 
   const validation = {};
   _.toPairs(_.pick(USER_FIELDS, fieldList)).map(

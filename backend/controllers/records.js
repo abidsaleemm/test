@@ -36,7 +36,7 @@ function read(req, res, next) {
 
 async function list(req, res, next) {
   try {
-    const { from, to, page = 1, rowsPerPage = 5, user } = req.query;
+    const { from, to, page = 1, rowsPerPage = 5, user = [] } = req.query;
 
     let where = {};
     if (req.user.role < Roles.ADMIN) {
@@ -58,8 +58,8 @@ async function list(req, res, next) {
     else if (from && !to) where["date"] = { $gte: new Date(from) };
     else if (!from && to) where["date"] = { $lte: new Date(to) };
 
-    if (user && userRole === Roles.ADMIN) {
-      where["user"] = ObjectId(user);
+    if (user.length && req.user.role === Roles.ADMIN) {
+      where["user"] = { $in: user.map(a => ObjectId(a)) };
     }
 
     if (

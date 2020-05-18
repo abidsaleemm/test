@@ -6,7 +6,8 @@ const {
   invalidCredential,
   serverError,
   userAlreadyRegistered,
-  badRequest
+  badRequest,
+  Roles
 } = require("../constants");
 
 async function login(req, res, next) {
@@ -42,7 +43,7 @@ async function login(req, res, next) {
           "lastName",
           "email",
           "role",
-          "preferredWorkingHours"
+          user.role < Roles.ADMIN ? "preferredWorkingHours" : ""
         ]),
         token
       });
@@ -74,7 +75,13 @@ async function signUp(req, res, next) {
     );
     const newUser = await user.save();
     res.send({
-      user: pick(newUser, ["firstName", "lastName", "email", "_id"])
+      user: pick(newUser, [
+        "firstName",
+        "lastName",
+        "email",
+        "_id",
+        "preferredWorkingHours"
+      ])
     });
   } catch (error) {
     res.status(serverError.code).send(serverError.message);
@@ -101,7 +108,7 @@ async function updateProfile(req, res, next) {
         "lastName",
         "email",
         "role",
-        "preferredWorkingHours"
+        req.user.role < Roles.ADMIN ? "preferredWorkingHours" : ""
       ]),
       token
     });

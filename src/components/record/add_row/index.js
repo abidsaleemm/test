@@ -17,7 +17,7 @@ import _ from "lodash-es";
 import { createRecord, getRecords } from "store/actions/record";
 import { showToast } from "store/actions/toast";
 import withToast from "hoc/withToast";
-import { DATE_FORMAT, RECORD_FIELDS } from "constants/index";
+import { DATE_FORMAT, RECORD_FIELDS, ROLES } from "constants/index";
 import { getUsers, setParams } from "store/actions/user";
 import SelectUser from "components/select_user";
 
@@ -47,7 +47,7 @@ const AddRow = props => {
   const validateSchema = Yup.object().shape(validation);
 
   useEffect(() => {
-    if (userParams.rowsPerPage !== count && me.role === 2) {
+    if (userParams.rowsPerPage !== count && me.role === ROLES.ADMIN) {
       setParams({ page: 1, rowsPerPage: count });
       getUsers({ params: userParams });
     }

@@ -5,14 +5,15 @@ import classNames from "classnames";
 import { Link, useHistory } from "react-router-dom";
 import { useSelector } from "react-redux";
 import get from "lodash-es/get";
-import { Navbar, Button, Alignment, Classes } from "@blueprintjs/core";
+import { Navbar, Button, Alignment, Classes, Intent } from "@blueprintjs/core";
 import { signout } from "store/actions/auth";
 import { ROLES } from "constants/index";
 import ManageProfile from "components/manage_profile";
+import { showToast } from "store/actions/toast";
 import withToast from "hoc/withToast";
 
 const Header = props => {
-  const { signout } = props;
+  const { signout, showToast } = props;
   const [isOpen, toggleDialog] = useState(false);
 
   const history = useHistory();
@@ -49,6 +50,11 @@ const Header = props => {
             icon="log-out"
             onClick={() => {
               signout();
+              showToast({
+                message: "You are logged out!",
+                intent: Intent.WARNING,
+                timeout: 3000
+              });
               history.push("/login");
             }}
           />
@@ -59,7 +65,8 @@ const Header = props => {
 };
 
 const mapDispatchToProps = {
-  signout: signout
+  signout: signout,
+  showToast: showToast
 };
 
 export default compose(connect(() => ({}), mapDispatchToProps))(
