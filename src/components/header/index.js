@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { connect } from "react-redux";
 import { compose } from "redux";
 import classNames from "classnames";
-import { Link, useHistory } from "react-router-dom";
+import { Link } from "react-router-dom";
 import { useSelector } from "react-redux";
 import get from "lodash-es/get";
 import { Navbar, Button, Alignment, Classes, Intent } from "@blueprintjs/core";
@@ -15,8 +15,6 @@ import withToast from "hoc/withToast";
 const Header = props => {
   const { signout, showToast } = props;
   const [isOpen, toggleDialog] = useState(false);
-
-  const history = useHistory();
 
   const role = useSelector(state => get(state, "auth.me.role", 0));
   const isManagable = role === ROLES.MANAGER || role === ROLES.ADMIN;
@@ -55,7 +53,6 @@ const Header = props => {
                 intent: Intent.WARNING,
                 timeout: 3000
               });
-              window.location.href = "/login";
             }}
           />
         </Navbar.Group>
