@@ -81,13 +81,14 @@ const SignIn = props => {
         {({
           submitForm,
           isSubmitting,
+          touched: { email, password },
           errors: { email: emailError, password: passwordError }
         }) => {
           return (
             <Form>
               <FormGroup
-                helperText={emailError}
-                intent={emailError ? Intent.DANGER : Intent.NONE}
+                helperText={email && emailError}
+                intent={email && emailError ? Intent.DANGER : Intent.NONE}
                 label="Email Address"
                 labelFor="email"
               >
@@ -97,20 +98,22 @@ const SignIn = props => {
                   id="email"
                   name="email"
                   type="email"
-                  intent={emailError ? Intent.DANGER : Intent.NONE}
+                  intent={email && emailError ? Intent.DANGER : Intent.NONE}
                   label="Email Address"
                   large
                 />
               </FormGroup>
               <FormGroup
-                helperText={passwordError}
-                intent={passwordError ? Intent.DANGER : Intent.NONE}
+                helperText={password && passwordError}
+                intent={password && passwordError ? Intent.DANGER : Intent.NONE}
                 label="Password"
                 labelFor="password"
               >
                 <Field
                   component={InputGroup}
-                  intent={passwordError ? Intent.DANGER : Intent.NONE}
+                  intent={
+                    password && passwordError ? Intent.DANGER : Intent.NONE
+                  }
                   placeholder="Password (required)"
                   id="password"
                   name="password"

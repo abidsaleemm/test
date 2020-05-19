@@ -22,7 +22,6 @@ const MomentDate = ({
           Classes.DARK,
           !intent ? Classes.MINIMAL : ""
         )}
-        interactive={true}
         intent={intent}
       >
         {m.format(format)}

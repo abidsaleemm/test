@@ -13,7 +13,7 @@ const initialState = {
   records: [],
   currentRecord: null,
   filteredResults: [],
-  count: 0,
+  count: -1,
   params: {
     page: 1,
     limit: 5,

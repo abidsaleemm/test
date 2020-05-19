@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { connect } from "react-redux";
 import { compose } from "redux";
 import classNames from "classnames";
-import { Link } from "react-router-dom";
+import { Link, useHistory } from "react-router-dom";
 import { useSelector } from "react-redux";
 import get from "lodash-es/get";
 import { Navbar, Button, Alignment, Classes, Intent } from "@blueprintjs/core";
@@ -18,12 +18,20 @@ const Header = props => {
 
   const role = useSelector(state => get(state, "auth.me.role", 0));
   const isManagable = role === ROLES.MANAGER || role === ROLES.ADMIN;
+  const history = useHistory();
 
   return (
     <>
       <Navbar className={Classes.DARK}>
         <Navbar.Group align={Alignment.LEFT}>
-          <Navbar.Heading>Time Management</Navbar.Heading>
+          <Navbar.Heading
+            className="cursor-pointer"
+            onClick={() => {
+              history.push("/dashboard");
+            }}
+          >
+            Time Management
+          </Navbar.Heading>
           <Navbar.Divider />
         </Navbar.Group>
         <Navbar.Group align={Alignment.RIGHT}>

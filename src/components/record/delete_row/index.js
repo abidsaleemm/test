@@ -58,7 +58,7 @@ const DeleteRow = props => {
               icon="trash"
               intent={Intent.DANGER}
               onClick={deleteRow}
-              text="Delete"
+              text="Remove"
             />
           </div>
         </div>

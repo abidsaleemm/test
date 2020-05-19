@@ -96,20 +96,29 @@ const AddRow = props => {
             initialValues={{ ...initialValue }}
             validationSchema={validateSchema}
           >
-            {({ submitForm, isSubmitting, errors }) => {
+            {({ submitForm, isSubmitting, touched, errors }) => {
               return (
                 <Form>
                   {fieldList.map(field => {
                     return (
                       <FormGroup
-                        helperText={errors[field]}
-                        intent={errors[field] ? Intent.DANGER : Intent.NONE}
+                        helperText={touched[field] && errors[field]}
+                        intent={
+                          touched[field] && errors[field]
+                            ? Intent.DANGER
+                            : Intent.NONE
+                        }
                         label={USER_FIELDS[field].form_label}
                         labelFor={USER_FIELDS[field].id}
                       >
                         <Field
                           {...USER_FIELDS[field]}
                           {...(field === "role" ? passToProps : null)}
+                          intent={
+                            touched[field] && errors[field]
+                              ? Intent.DANGER
+                              : Intent.NONE
+                          }
                         />
                       </FormGroup>
                     );

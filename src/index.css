@@ -46,3 +46,11 @@ code {
 .bp3-dark .bp3-table-cell.bp3-intent-danger {
   background: rgba(219, 55, 55, 0.3);
 }
+
+.bp3-dark .bp3-table-cell {
+  box-shadow: none;
+}
+
+.cursor-pointer {
+  cursor: pointer;
+}

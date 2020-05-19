@@ -117,20 +117,29 @@ const AddRow = props => {
             initialValues={{ ...initialValue }}
             validationSchema={validateSchema}
           >
-            {({ submitForm, isSubmitting, errors }) => {
+            {({ submitForm, isSubmitting, touched, errors }) => {
               return (
                 <Form>
                   {fieldList.map(field => {
                     return (
                       <FormGroup
-                        helperText={errors[field]}
-                        intent={errors[field] ? Intent.DANGER : Intent.NONE}
+                        helperText={touched[field] && errors[field]}
+                        intent={
+                          touched[field] && errors[field]
+                            ? Intent.DANGER
+                            : Intent.NONE
+                        }
                         label={RECORD_FIELDS[field].form_label}
                         labelFor={RECORD_FIELDS[field].id}
                       >
                         <Field
                           {...RECORD_FIELDS[field]}
                           {...(field === "date" ? passProps : null)}
+                          intent={
+                            touched[field] && errors[field]
+                              ? Intent.DANGER
+                              : Intent.NONE
+                          }
                         />
                       </FormGroup>
                     );

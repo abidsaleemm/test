@@ -6,7 +6,6 @@ import classNames from "classnames";
 import _ from "lodash-es";
 import Blob from "blob";
 import download from "downloadjs";
-import { useHistory } from "react-router-dom";
 import {
   Card,
   Elevation,
@@ -116,8 +115,6 @@ const Dashboard = props => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [users, userCount]);
 
-  const history = useHistory();
-
   const handleChangeDateRange = dateRange => {
     const [fromDate, toDate] = dateRange;
     const from = moment(fromDate);
@@ -132,10 +129,13 @@ const Dashboard = props => {
   };
 
   const removeRange = () => {
-    setParams({
-      from: null,
-      to: null
-    });
+    if (startDate || endDate) {
+      setParams({
+        page: 1,
+        from: null,
+        to: null
+      });
+    }
     updateStartDate(null);
     updateEndDate(null);
   };
@@ -253,13 +253,7 @@ const Dashboard = props => {
         className={Classes.DARK}
         style={style.card}
       >
-        <Breadcrumb
-          icon="chevron-right"
-          text="Records"
-          onClick={() => {
-            history.push("/dashboard");
-          }}
-        />
+        <Breadcrumb icon="chevron-right" text="Records" disabled={true} />
         <div className={Classes.NAVBAR_GROUP} style={style.cardChild}>
           <AddRow />
 
@@ -276,7 +270,9 @@ const Dashboard = props => {
             <DateRangeInput
               allowSingleDayRange={true}
               className="ml-3"
+              maxDate={new Date()}
               value={[startDate, endDate]}
+              closeOnSelection
               onChange={handleChangeDateRange}
               {...jsDateFormatter}
             />
@@ -316,19 +312,27 @@ const Dashboard = props => {
               renderMode={RenderMode.NONE}
               truncated={false}
               enableRowHeader={false}
+              allowSelection={false}
             >
               <Column
                 className={Classes.LARGE}
                 name="No"
+                allowSelection={false}
                 cellRenderer={row => (
-                  <Cell>{row + (params.page - 1) * params.limit + 1}</Cell>
+                  <Cell allowSelection={false}>
+                    {row + (params.page - 1) * params.limit + 1}
+                  </Cell>
                 )}
               />
               <Column
                 className={Classes.LARGE}
                 name="User"
                 cellRenderer={row => (
-                  <Cell intent={getColor(row)}>
+                  <Cell
+                    intent={
+                      me.role === ROLES.ADMIN ? getColor(row) : Intent.NONE
+                    }
+                  >
                     {records[row].user.firstName +
                       " " +
                       records[row].user.lastName}
@@ -384,7 +388,7 @@ const Dashboard = props => {
             />
           </>
         )}
-        {!records.length && (
+        {!records.length && count === 0 && (
           <div className="bp3-non-ideal-state bp3-hotkey-column">
             No records found
           </div>

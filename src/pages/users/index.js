@@ -2,7 +2,6 @@ import React, { useEffect } from "react";
 import { connect } from "react-redux";
 import { compose } from "redux";
 import classNames from "classnames";
-import { useHistory } from "react-router-dom";
 import {
   Classes,
   ButtonGroup,
@@ -49,8 +48,6 @@ const Users = props => {
     setParams({ page });
   };
 
-  const history = useHistory();
-
   return (
     <div>
       <Header />
@@ -59,13 +56,7 @@ const Users = props => {
         style={style.card}
         className={Classes.DARK}
       >
-        <Breadcrumb
-          icon="chevron-right"
-          text="Users"
-          onClick={() => {
-            history.push("/users");
-          }}
-        />
+        <Breadcrumb icon="chevron-right" text="Users" disabled={true} />
         <br />
         <br />
         <AddRow />
@@ -75,7 +66,7 @@ const Users = props => {
               className="my-3"
               numRows={users.length}
               defaultRowHeight={38}
-              columnWidths={[50, 250, 300, 200, 274, 200]}
+              columnWidths={[50, 158, 300, 200, 274, 200]}
               renderMode={RenderMode.NONE}
               enableRowHeader={false}
             >

@@ -96,19 +96,30 @@ const ManageProfile = props => {
             initialValues={initialValue}
             validationSchema={validateSchema}
           >
-            {({ submitForm, isSubmitting, errors }) => {
+            {({ submitForm, isSubmitting, touched, errors }) => {
               return (
                 <Form>
                   {fieldList.map((field, index) => {
                     return (
                       <FormGroup
-                        helperText={errors[field]}
-                        intent={errors[field] ? Intent.DANGER : Intent.NONE}
+                        helperText={touched[field] && errors[field]}
+                        intent={
+                          touched[field] && errors[field]
+                            ? Intent.DANGER
+                            : Intent.NONE
+                        }
                         label={USER_FIELDS[field].form_label}
                         labelFor={USER_FIELDS[field].id}
                         key={index}
                       >
-                        <Field {...USER_FIELDS[field]} />
+                        <Field
+                          {...USER_FIELDS[field]}
+                          intent={
+                            touched[field] && errors[field]
+                              ? Intent.DANGER
+                              : Intent.NONE
+                          }
+                        />
                       </FormGroup>
                     );
                   })}

@@ -94,11 +94,13 @@ async function list(req, res, next) {
       .populate("user", "-password -passwordConfirm")
       .sort("-date");
 
-    records.map(async record => {
-      record.totalHours = await totalHours(record);
-      record.save();
-      return record;
-    });
+    await Promise.all(
+      records.map(async record => {
+        record.totalHours = await totalHours(record);
+        record.save();
+        return record;
+      })
+    );
 
     const count = await Record.countDocuments(where);
 
