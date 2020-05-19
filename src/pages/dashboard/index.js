@@ -274,6 +274,7 @@ const Dashboard = props => {
               />
             )}
             <DateRangeInput
+              allowSingleDayRange={true}
               className="ml-3"
               value={[startDate, endDate]}
               onChange={handleChangeDateRange}
