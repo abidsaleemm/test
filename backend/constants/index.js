@@ -9,7 +9,7 @@ module.exports = {
     code: 404
   },
   invalidCredential: {
-    message: "Invalid credential.",
+    message: "Invalid credential. Email and password does not match.",
     code: 401
   },
   serverError: {

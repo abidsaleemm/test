@@ -25,10 +25,7 @@ import Pagination from "components/pagination";
 import { AddRow, EditRow, DeleteRow } from "components/record";
 import PreferredWorkingHours from "components/preferred_working_hours";
 import { getUsers } from "store/actions/user";
-import {
-  MomentDateRange,
-  EnhancedMomentDate
-} from "components/moment_daterange";
+import { EnhancedMomentDate } from "components/moment_daterange";
 import MultiSelectUser from "components/multi_select_user";
 import { setParams, getRecords, generateRecords } from "store/actions/record";
 import withToast from "hoc/withToast";
@@ -197,7 +194,9 @@ const Dashboard = props => {
               : "";
 
           return `<tr class="${
-            record.hour >= preferredWorkingHours ? "success" : "danger"
+            record.hour >= _.get(record, "user.0.preferredWorkingHours", 0)
+              ? "success"
+              : "danger"
           }">
                     <td>${index + 1}</td>
                     ${renderUserCol}

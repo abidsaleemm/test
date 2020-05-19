@@ -24,8 +24,6 @@ import SelectUser from "components/select_user";
 const AddRow = props => {
   const {
     createRecord,
-    params,
-    getRecords,
     showToast,
     me,
     users,

@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React from "react";
 import { connect } from "react-redux";
 import { compose } from "redux";
 import { Formik, Form, Field } from "formik";
@@ -23,7 +23,6 @@ import { USER_FIELDS } from "constants/index";
 
 const SignUp = props => {
   const { signup, showToast } = props;
-  const [showPassword, setShowPassword] = useState(false);
   const history = useHistory();
 
   const initialValue = {

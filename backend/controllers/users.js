@@ -15,7 +15,7 @@ function read(req, res, next) {
 async function list(req, res, next) {
   try {
     const { page = 1, limit = 5 } = req.query;
-    const where = { _id: { $ne: req.user._id }, role: { $lte: Roles.MANAGER } };
+    const where = { _id: { $ne: req.user._id }, role: { $lte: req.user.role } };
 
     if (!isInteger(toNumber(page)) || !isInteger(toNumber(limit))) {
       return res
