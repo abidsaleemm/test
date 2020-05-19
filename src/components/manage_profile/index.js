@@ -22,8 +22,15 @@ const ManageProfile = props => {
 
   const fieldList =
     me.role < ROLES.ADMIN
-      ? ["firstName", "lastName", "email", "password", "preferredWorkingHours"]
-      : ["firstName", "lastName", "email", "password"];
+      ? [
+          "firstName",
+          "lastName",
+          "email",
+          "password",
+          "passwordConfirm",
+          "preferredWorkingHours"
+        ]
+      : ["firstName", "lastName", "email", "password", "passwordConfirm"];
 
   const validation = {};
   _.toPairs(_.pick(USER_FIELDS, fieldList)).map(
@@ -32,8 +39,11 @@ const ManageProfile = props => {
   const validateSchema = Yup.object().shape(validation);
 
   const handleSubmit = (values, actions) => {
-    if (values["password"].includes("******")) {
-      values = _.omit(values, ["password"]);
+    if (
+      values["password"].includes("********") &&
+      values["passwordConfirm"].includes("********")
+    ) {
+      values = _.omit(values, ["password, passwordConfirm"]);
     }
     updateProfile({
       body: values,
@@ -62,6 +72,7 @@ const ManageProfile = props => {
     a => (initialValue[a[0]] = _.get(me, a[0], ""))
   );
   initialValue["password"] = "********";
+  initialValue["passwordConfirm"] = "********";
 
   return (
     <>

@@ -60,9 +60,9 @@ async function signUp(req, res, next) {
   try {
     const { error } = createValidate(req.body);
     if (error)
-      return res
-        .status(400)
-        .send(get(error, "details.0.message", "Something went wrong."));
+      return res.status(400).send({
+        message: get(error, "details.0.message", "Something went wrong.")
+      });
 
     let user = await User.findOne({ email: req.body.email });
     if (user)
@@ -71,7 +71,13 @@ async function signUp(req, res, next) {
         .send({ message: userAlreadyRegistered.message });
 
     user = new User(
-      pick(req.body, ["firstName", "lastName", "email", "password"])
+      pick(req.body, [
+        "firstName",
+        "lastName",
+        "email",
+        "password",
+        "passwordConfirm"
+      ])
     );
     const newUser = await user.save();
     res.status(201).send({

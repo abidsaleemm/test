@@ -33,6 +33,12 @@ const UserSchema = new mongoose.Schema({
     minlength: 8,
     maxlength: 250
   },
+  passwordConfirm: {
+    type: String,
+    required: true,
+    minlength: 8,
+    maxlength: 250
+  },
   role: {
     type: Number,
     enum: Object.values(Roles),
@@ -84,6 +90,16 @@ const createUser = user => {
       .min(8)
       .max(50)
       .required(),
+    passwordConfirm: Joi.string()
+      .required()
+      .valid(Joi.ref("password"))
+      .options({
+        language: {
+          any: {
+            allowOnly: "Both password need to be the same"
+          }
+        }
+      }),
     role: Joi.number()
       .integer()
       .optional()
@@ -118,6 +134,16 @@ const updateUser = user => {
       .min(8)
       .max(50)
       .optional(),
+    passwordConfirm: Joi.string()
+      .required()
+      .valid(Joi.ref("password"))
+      .options({
+        language: {
+          any: {
+            allowOnly: "Both password need to be the same"
+          }
+        }
+      }),
     role: Joi.number()
       .integer()
       .optional()

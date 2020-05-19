@@ -108,6 +108,28 @@ export const USER_FIELDS = {
     initialValue: "",
     large: true
   },
+  passwordConfirm: {
+    label: "Password",
+    form_label: "Password",
+    placeholder: "Password (Required)",
+    id: "passwordConfirm",
+    type: "password",
+    name: "passwordConfirm",
+    component: InputGroup,
+    validate: Yup.string()
+      .when("password", {
+        is: val => (val && val.length > 0 ? true : false),
+        then: Yup.string().oneOf(
+          [Yup.ref("password")],
+          "Both password need to be the same"
+        )
+      })
+      .min(8, "Length must be at least 8 letters!")
+      .max(50, "Length must be less than 50 letters!")
+      .required("Required"),
+    initialValue: "",
+    large: true
+  },
   role: {
     label: "Role",
     form_label: null,

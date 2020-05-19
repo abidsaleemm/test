@@ -34,6 +34,7 @@ const EditRow = props => {
     "lastName",
     "email",
     "password",
+    "passwordConfirm",
     "role",
     "preferredWorkingHours"
   ];
@@ -46,8 +47,11 @@ const EditRow = props => {
 
   const handleSubmit = (values, actions) => {
     values["role"] = value;
-    if (values["password"].includes("******")) {
-      values = _.omit(values, ["password"]);
+    if (
+      values["password"].includes("********") &&
+      values["passwordConfirm"].includes("********")
+    ) {
+      values = _.omit(values, ["password, passwordConfirm"]);
     }
     updateUser({
       id: selectedRow._id,
@@ -81,6 +85,7 @@ const EditRow = props => {
     a => (initialValue[a[0]] = _.get(selectedRow, a[0], ""))
   );
   initialValue["password"] = "********";
+  initialValue["passwordConfirm"] = "********";
 
   return (
     <>
