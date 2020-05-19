@@ -36,7 +36,7 @@ function read(req, res, next) {
 
 async function list(req, res, next) {
   try {
-    const { from, to, page = 1, rowsPerPage = 5, user = [] } = req.query;
+    const { from, to, page = 1, limit = 5, user = [] } = req.query;
 
     let where = {};
     if (req.user.role < Roles.ADMIN) {
@@ -46,11 +46,13 @@ async function list(req, res, next) {
     if (isInvalidDate(from, to)) {
       return res
         .status(422)
-        .send("Start date and end date must be valid date.");
+        .send({ message: "Start date and end date must be valid date." });
     }
 
     if (to && from && moment(to).isBefore(moment(from))) {
-      return res.status(422).send("Start date must be before end date.");
+      return res
+        .status(422)
+        .send({ message: "Start date must be before end date." });
     }
 
     if (from && to)
@@ -64,17 +66,17 @@ async function list(req, res, next) {
 
     if (
       !isInteger(toNumber(page)) ||
-      !isInteger(toNumber(rowsPerPage)) ||
+      !isInteger(toNumber(limit)) ||
       toNumber(page) <= 0 ||
       toNumber(page) <= 0
     ) {
       return res
         .status(422)
-        .send("Page and rows per page must be positive integer.");
+        .send({ message: "Page and rows per page must be positive integer." });
     }
     const records = await Record.find(where)
-      .skip((page - 1) * rowsPerPage)
-      .limit(parseInt(rowsPerPage))
+      .skip((page - 1) * limit)
+      .limit(parseInt(limit))
       .populate("user", "-password")
       .sort("-date");
     const count = await Record.countDocuments(where);
@@ -93,14 +95,16 @@ async function create(req, res, next) {
 
     const { error } = createValidate(req.body);
     if (error)
-      return res
-        .status(400)
-        .send(get(error, "details.0.message", "Something went wrong."));
+      return res.status(400).send({
+        message: get(error, "details.0.message", "Something went wrong.")
+      });
     req.body.date = moment(req.body.date).locale("en");
     const record = new Record(req.body);
 
     if (await isOverHours(record)) {
-      return res.status(noOverDailyHours.code).send(noOverDailyHours.message);
+      return res
+        .status(noOverDailyHours.code)
+        .send({ message: noOverDailyHours.message });
     }
 
     const newRecord = await record.save();
@@ -117,14 +121,16 @@ async function update(req, res, next) {
     }
     const { error } = updateValidate(req.body);
     if (error)
-      return res
-        .status(400)
-        .send(get(error, "details.0.message", "Something went wrong."));
+      return res.status(400).send({
+        message: get(error, "details.0.message", "Something went wrong.")
+      });
     req.body.date = moment(req.body.date).locale("en");
     assign(req.record, req.body);
 
     if (await isOverHours(req.record)) {
-      return res.status(noOverDailyHours.code).send(noOverDailyHours.message);
+      return res
+        .status(noOverDailyHours.code)
+        .send({ message: noOverDailyHours.message });
     }
 
     const updatedRecord = await await req.record.save();
@@ -144,13 +150,15 @@ async function getSpecificRecord(req, res, next, id) {
     const record = await Record.findById(id);
 
     if (!record) {
-      return res.status(notFound.code).send(notFound.message);
+      return res.status(notFound.code).send({ message: notFound.message });
     }
     if (
       req.user.role !== Roles.ADMIN &&
       req.user._id !== record.user.toString()
     ) {
-      return res.status(unauthorized.code).send(unauthorized.message);
+      return res
+        .status(unauthorized.code)
+        .send({ message: unauthorized.message });
     }
 
     req.record = record;
@@ -169,11 +177,13 @@ async function generateRecords(req, res, next) {
     if (isInvalidDate(from, to)) {
       return res
         .status(422)
-        .send("Start date and end date must be valid date.");
+        .send({ message: "Start date and end date must be valid date." });
     }
 
     if (to && from && moment(to).isBefore(moment(from))) {
-      return res.status(422).send("Start date must be before end date.");
+      return res
+        .status(422)
+        .send({ message: "Start date must be before end date." });
     }
 
     if (user.length && req.user.role === Roles.ADMIN) {

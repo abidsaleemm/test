@@ -26,6 +26,7 @@ const EditRow = props => {
 
   useEffect(() => {
     setValue(selectedRow.role);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isOpen]);
 
   const fieldList = [
@@ -63,7 +64,7 @@ const EditRow = props => {
       fail: err => {
         actions.setSubmitting(false);
         showToast({
-          message: err.response.data,
+          message: err.response.data.message,
           intent: Intent.DANGER
         });
       }

@@ -21,7 +21,10 @@ const DeleteRow = props => {
         toggleDialog(false);
       },
       fail: err => {
-        showToast({ message: err.response.data, status: Intent.DANGER });
+        showToast({
+          message: err.response.data.message,
+          status: Intent.DANGER
+        });
         toggleDialog(false);
       }
     });

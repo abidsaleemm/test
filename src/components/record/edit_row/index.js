@@ -40,6 +40,7 @@ const EditRow = props => {
 
   useEffect(() => {
     selectDate(new Date(selectedRow.date));
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isOpen]);
 
   const fieldList = ["date", "note", "hour"];
@@ -79,7 +80,7 @@ const EditRow = props => {
       fail: err => {
         actions.setSubmitting(false);
         showToast({
-          message: err.response.data,
+          message: err.response.data.message,
           intent: Intent.DANGER
         });
       }

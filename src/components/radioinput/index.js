@@ -16,6 +16,8 @@ const RadioInput = props => {
           return (
             <Radio label={upperFirst(toLower(role))} value={ROLES[role]} />
           );
+        } else {
+          return null;
         }
       })}
     </RadioGroup>

@@ -1,5 +1,4 @@
 import { handleActions } from "redux-actions";
-import { map, set } from "lodash-es";
 import { Success, Fail } from "utils/status";
 import {
   GET_RECORDS,
@@ -17,7 +16,7 @@ const initialState = {
   count: 0,
   params: {
     page: 1,
-    rowsPerPage: 5,
+    limit: 5,
     from: null,
     to: null,
     user: []

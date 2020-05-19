@@ -48,7 +48,10 @@ const ManageProfile = props => {
       },
       fail: err => {
         actions.setSubmitting(false);
-        showToast({ message: err.response.data, status: Intent.DANGER });
+        showToast({
+          message: err.response.data.message,
+          status: Intent.DANGER
+        });
         toggleDialog(false);
       }
     });

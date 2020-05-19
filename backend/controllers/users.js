@@ -1,4 +1,4 @@
-const { isInteger, toNumber, pick } = require("lodash");
+const { isInteger, toNumber, pick, get } = require("lodash");
 const { User, createValidate, updateValidate } = require("../models/user");
 const { Record } = require("../models/record");
 const {
@@ -14,18 +14,18 @@ function read(req, res, next) {
 
 async function list(req, res, next) {
   try {
-    const { page = 1, rowsPerPage = 5 } = req.query;
+    const { page = 1, limit = 5 } = req.query;
     const where = { _id: { $ne: req.user._id }, role: { $lte: Roles.MANAGER } };
 
-    if (!isInteger(toNumber(page)) || !isInteger(toNumber(rowsPerPage))) {
+    if (!isInteger(toNumber(page)) || !isInteger(toNumber(limit))) {
       return res
         .status(422)
-        .send("Page and rows per page must be positive integer.");
+        .send({ message: "Page and rows per page must be positive integer." });
     }
 
     const users = await User.find(where)
-      .skip((page - 1) * rowsPerPage)
-      .limit(parseInt(rowsPerPage))
+      .skip((page - 1) * limit)
+      .limit(parseInt(limit))
       .select("-password")
       .sort("-role");
     const count = await User.countDocuments(where);
@@ -40,20 +40,20 @@ async function create(req, res, next) {
   try {
     const { error } = createValidate(req.body);
     if (error)
-      return res
-        .status(400)
-        .send(get(error, "details.0.message", "Something went wrong."));
+      return res.status(400).send({
+        message: get(error, "details.0.message", "Something went wrong.")
+      });
 
     let exist = await User.findOne({ email: req.body.email });
     if (exist)
       return res
         .status(userAlreadyRegistered.code)
-        .send(userAlreadyRegistered.message);
+        .send({ message: userAlreadyRegistered.message });
 
     if (req.user.role === Roles.MANAGER && req.body.role === Roles.ADMIN) {
-      return res
-        .status(unauthorized.code)
-        .send(`${unauthorized.message} Managers cannot create admin.`);
+      return res.status(unauthorized.code).send({
+        message: `${unauthorized.message} Managers cannot create admin.`
+      });
     }
 
     const user = new User(req.body);
@@ -77,9 +77,9 @@ async function update(req, res, next) {
   try {
     const { error } = updateValidate(req.body);
     if (error)
-      return res
-        .status(400)
-        .send(get(error, "details.0.message", "Something went wrong."));
+      return res.status(400).send({
+        message: get(error, "details.0.message", "Something went wrong.")
+      });
 
     let exist = await User.findOne({
       email: req.body.email,
@@ -88,10 +88,12 @@ async function update(req, res, next) {
     if (exist)
       return res
         .status(userAlreadyRegistered.code)
-        .send(userAlreadyRegistered.message);
+        .send({ message: userAlreadyRegistered.message });
 
     if (req.user.role === Roles.MANAGER && req.body.role === Roles.ADMIN) {
-      return res.status(unauthorized.code).send(unauthorized.message);
+      return res
+        .status(unauthorized.code)
+        .send({ message: unauthorized.message });
     }
 
     Object.assign(req.userModel, req.body);
@@ -123,11 +125,13 @@ async function getSpecificUser(req, res, next, id) {
     const user = await User.findById(id);
 
     if (!user) {
-      return res.status(notFound.code).send(notFound.message);
+      return res.status(notFound.code).send({ message: notFound.message });
     }
 
     if (user.role > req.user.role) {
-      return res.status(unauthorized.code).send(unauthorized.message);
+      return res
+        .status(unauthorized.code)
+        .send({ message: unauthorized.message });
     }
 
     req.userModel = user;

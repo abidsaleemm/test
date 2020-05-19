@@ -16,7 +16,7 @@ const initialState = {
   count: 0,
   params: {
     page: 1,
-    rowsPerPage: 5
+    limit: 5
   },
   error: ""
 };

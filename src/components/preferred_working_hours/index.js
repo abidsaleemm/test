@@ -44,7 +44,7 @@ const PreferredWorkingHours = props => {
       fail: err => {
         actions.setSubmitting(false);
         showToast({
-          message: err.response.data,
+          message: err.response.data.message,
           intent: Intent.DANGER
         });
       }

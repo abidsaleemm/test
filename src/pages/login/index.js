@@ -50,7 +50,7 @@ const SignIn = props => {
       },
       fail: err => {
         actions.setSubmitting(false);
-        showToast({ message: err.response.data, intent: "danger" });
+        showToast({ message: err.response.data.message, intent: "danger" });
       }
     });
   };

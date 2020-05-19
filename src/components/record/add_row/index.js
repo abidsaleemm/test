@@ -47,8 +47,8 @@ const AddRow = props => {
   const validateSchema = Yup.object().shape(validation);
 
   useEffect(() => {
-    if (userParams.rowsPerPage !== count && me.role === ROLES.ADMIN) {
-      setParams({ page: 1, rowsPerPage: count });
+    if (userParams.limit !== count && me.role === ROLES.ADMIN) {
+      setParams({ page: 1, limit: count });
       getUsers({ params: userParams });
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -83,7 +83,7 @@ const AddRow = props => {
       fail: err => {
         actions.setSubmitting(false);
         showToast({
-          message: err.response.data,
+          message: err.response.data.message,
           intent: Intent.DANGER
         });
       }

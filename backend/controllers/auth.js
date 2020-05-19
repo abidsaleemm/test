@@ -13,12 +13,12 @@ const {
 async function login(req, res, next) {
   try {
     const { email = "", password = "" } = req.body || {};
-    if (!req.body.email) {
-      return res.status(badRequest.code).send("Email is empty.");
-    } else if (req.body.password.length < 8) {
+    if (!email) {
+      return res.status(badRequest.code).send({ message: "Email is empty." });
+    } else if (password.length < 8) {
       return res
         .status(badRequest.code)
-        .send("Password should be at least 8 letters.");
+        .send({ message: "Password should be at least 8 letters." });
     }
 
     const user = await User.findOne({ email: req.body.email })
@@ -27,11 +27,9 @@ async function login(req, res, next) {
       )
       .exec();
     if (!user) {
-      return res
-        .status(notFound.code)
-        .send(
-          `${notFound.message} Please check your email and password again. They do not match.`
-        );
+      return res.status(notFound.code).send({
+        message: `${notFound.message} Please check your email and password again. They do not match.`
+      });
     }
 
     if (bcrypt.compareSync(req.body.password, user.password)) {
@@ -48,10 +46,12 @@ async function login(req, res, next) {
         token
       });
     } else {
-      res.status(invalidCredential.code).send(invalidCredential.message);
+      res
+        .status(invalidCredential.code)
+        .send({ message: invalidCredential.message });
     }
   } catch (error) {
-    res.status(serverError.code).send(serverError.message);
+    res.status(serverError.code).send({ message: serverError.message });
     next(error);
   }
 }
@@ -68,23 +68,17 @@ async function signUp(req, res, next) {
     if (user)
       return res
         .status(userAlreadyRegistered.code)
-        .send(userAlreadyRegistered.message);
+        .send({ message: userAlreadyRegistered.message });
 
     user = new User(
       pick(req.body, ["firstName", "lastName", "email", "password"])
     );
     const newUser = await user.save();
-    res.send({
-      user: pick(newUser, [
-        "firstName",
-        "lastName",
-        "email",
-        "_id",
-        "preferredWorkingHours"
-      ])
+    res.status(201).send({
+      user: pick(newUser, ["firstName", "lastName", "email", "_id"])
     });
   } catch (error) {
-    res.status(serverError.code).send(serverError.message);
+    res.status(serverError.code).send({ message: serverError.message });
     next(error);
   }
 }
@@ -93,9 +87,9 @@ async function updateProfile(req, res, next) {
   try {
     const { error } = updateValidate(req.body);
     if (error)
-      return res
-        .status(400)
-        .send(get(error, "details.0.message", "Something went wrong."));
+      return res.status(400).send({
+        message: get(error, "details.0.message", "Something went wrong.")
+      });
 
     const user = await User.findOne({ _id: req.user._id });
     assign(user, req.body, { role: get(req.user, "role", 0) });

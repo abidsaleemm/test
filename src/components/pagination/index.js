@@ -85,7 +85,7 @@ const Pagination = ({
 }) => {
   const [state, dispatch] = useReducer(
     reducer,
-    { currentPage: initialPage, total: count, size: params.rowsPerPage },
+    { currentPage: initialPage, total: count, size: params.limit },
     getState
   );
 
@@ -103,8 +103,8 @@ const Pagination = ({
   }, [count]);
 
   const handleClick = item => {
-    if (item !== params.rowsPerPage) {
-      setParams({ rowsPerPage: item, page: 1 });
+    if (item !== params.limit) {
+      setParams({ limit: item, page: 1 });
       dispatch({ type: "SELECT_CHANGE", size: item });
     }
   };
@@ -131,7 +131,7 @@ const Pagination = ({
           }}
           onItemSelect={handleClick}
         >
-          <Button text={params.rowsPerPage} rightIcon="double-caret-vertical" />
+          <Button text={params.limit} rightIcon="double-caret-vertical" />
         </Select>
         <Button
           disabled={state.currentPage === 1}

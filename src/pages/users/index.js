@@ -32,7 +32,7 @@ const Users = props => {
   const { users, getUsers, params, setParams, count } = props;
 
   useEffect(() => {
-    setParams({ page: 1, rowsPerPage: 5 });
+    setParams({ page: 1, limit: 5 });
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
@@ -64,7 +64,7 @@ const Users = props => {
         <br />
         <br />
         <AddRow />
-        {params.rowsPerPage >= users.length && (
+        {params.limit >= users.length && (
           <>
             <Table
               className="my-3"
@@ -78,9 +78,7 @@ const Users = props => {
                 className={Classes.LARGE}
                 name="No"
                 cellRenderer={row => (
-                  <Cell>
-                    {row + (params.page - 1) * params.rowsPerPage + 1}
-                  </Cell>
+                  <Cell>{row + (params.page - 1) * params.limit + 1}</Cell>
                 )}
               />
               <Column

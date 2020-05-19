@@ -107,10 +107,10 @@ const Dashboard = props => {
   }, [params, getRecords]);
 
   useEffect(() => {
-    if (userParams.rowsPerPage !== userCount && me.role === ROLES.ADMIN) {
+    if (userParams.limit !== userCount && me.role === ROLES.ADMIN) {
       getUsers({
         params: {
-          rowsPerPage: userCount,
+          limit: userCount,
           page: 1
         }
       });
@@ -125,6 +125,7 @@ const Dashboard = props => {
     const from = moment(fromDate);
     const to = moment(toDate);
     setParams({
+      page: 1,
       from: from.isValid() ? from.format(DATE_FORMAT) : null,
       to: to.isValid() ? to.format(DATE_FORMAT) : null
     });
@@ -288,10 +289,6 @@ const Dashboard = props => {
               onClick={removeRange}
               intent={Intent.DANGER}
             />
-            <MomentDateRange
-              className={classNames(Classes.DIALOG_FOOTER_ACTIONS)}
-              range={[startDate, endDate]}
-            />
           </ButtonGroup>
           <div>
             <Tooltip
@@ -327,9 +324,7 @@ const Dashboard = props => {
                 className={Classes.LARGE}
                 name="No"
                 cellRenderer={row => (
-                  <Cell>
-                    {row + (params.page - 1) * params.rowsPerPage + 1}
-                  </Cell>
+                  <Cell>{row + (params.page - 1) * params.limit + 1}</Cell>
                 )}
               />
               <Column
