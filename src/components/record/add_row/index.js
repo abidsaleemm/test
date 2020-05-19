@@ -72,7 +72,6 @@ const AddRow = props => {
       body: values,
       success: () => {
         actions.setSubmitting(false);
-        getRecords({ params });
         showToast({
           message: "Successfully added one row to table!",
           intent: Intent.SUCCESS,

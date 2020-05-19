@@ -43,6 +43,7 @@ export default handleActions(
     [Success(CREATE_USER)]: (state, { payload }) => ({
       ...state,
       user: payload,
+      count: state.count + 1,
       error: null
     }),
     [Fail(CREATE_USER)]: (state, { payload }) => {
@@ -85,6 +86,7 @@ export default handleActions(
     [Success(DEL_USER)]: state => {
       return {
         ...state,
+        count: state.count - 1,
         error: null
       };
     },

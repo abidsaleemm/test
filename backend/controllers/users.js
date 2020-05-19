@@ -26,7 +26,7 @@ async function list(req, res, next) {
     const users = await User.find(where)
       .skip((page - 1) * limit)
       .limit(parseInt(limit))
-      .select("-password")
+      .select("-password -passwordConfirm")
       .sort("-role");
     const count = await User.countDocuments(where);
 

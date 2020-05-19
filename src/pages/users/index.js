@@ -40,6 +40,11 @@ const Users = props => {
     getUsers({ params });
   }, [params, getUsers]);
 
+  useEffect(() => {
+    getUsers({ params });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [count]);
+
   const onPageChange = page => {
     setParams({ page });
   };

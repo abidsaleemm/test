@@ -17,6 +17,12 @@ const RecordSchema = new mongoose.Schema({
     min: [0, "Hour must be more than 0"],
     max: [24, "Hour should be less than 24"]
   },
+  totalHours: {
+    type: Number,
+    default: 1,
+    min: [0, "Hour must be more than 0"],
+    max: [24, "Hour should be less than 24"]
+  },
   note: {
     type: String,
     default: ""

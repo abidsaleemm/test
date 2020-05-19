@@ -47,6 +47,7 @@ export default handleActions(
       return {
         ...state,
         currentRecord: payload,
+        count: state.count + 1,
         error: null
       };
     },

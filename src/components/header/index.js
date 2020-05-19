@@ -55,7 +55,7 @@ const Header = props => {
                 intent: Intent.WARNING,
                 timeout: 3000
               });
-              history.push("/login");
+              window.location.href = "/login";
             }}
           />
         </Navbar.Group>

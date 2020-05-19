@@ -62,6 +62,7 @@ UserSchema.pre("save", function(next) {
     const salt = bcrypt.genSaltSync(10);
     const hash = bcrypt.hashSync(this.password, salt);
     this.password = hash;
+    this.passwordConfirm = hash;
     next();
   } else {
     next();
@@ -135,7 +136,7 @@ const updateUser = user => {
       .max(50)
       .optional(),
     passwordConfirm: Joi.string()
-      .required()
+      .optional()
       .valid(Joi.ref("password"))
       .options({
         language: {

@@ -7,14 +7,13 @@ import { showToast } from "store/actions/toast";
 import withToast from "hoc/withToast";
 
 const DeleteRow = props => {
-  const { deleteUser, params, getUsers, showToast, selectedRow } = props;
+  const { deleteUser, showToast, selectedRow } = props;
   const [isOpen, toggleDialog] = useState(false);
 
   const deleteRow = () => {
     deleteUser({
       id: selectedRow._id,
       success: () => {
-        getUsers({ params });
         showToast({
           message: "Selected user removed!",
           intent: Intent.SUCCESS

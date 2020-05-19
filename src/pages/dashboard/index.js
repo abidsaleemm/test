@@ -67,22 +67,17 @@ const Dashboard = props => {
   const [endDate, updateEndDate] = useState(null);
   const [selectedUsers, setSelectedUsers] = useState([]);
 
-  const pair = {};
-  _.toPairs(
-    _.groupBy(records, record => moment(record.date).format(DATE_FORMAT))
-  ).map(group => {
-    pair[group[0]] = _.sumBy(group[1], "hour");
-    return pair;
-  });
-
   const preferredWorkingHours = _.get(me, "preferredWorkingHours", 0);
 
   const getColor = row => {
-    if (row >= 0 && me.role < ROLES.ADMIN) {
-      const rowDate = moment(_.get(records, `${row}.date`)).format(DATE_FORMAT);
-      return preferredWorkingHours > pair[rowDate]
-        ? Intent.DANGER
-        : Intent.SUCCESS;
+    if (row >= 0) {
+      const recordWorkingHours = _.get(
+        records,
+        `${row}.user.preferredWorkingHours`,
+        0
+      );
+      const totalHours = _.get(records, `${row}.totalHours`);
+      return recordWorkingHours > totalHours ? Intent.DANGER : Intent.SUCCESS;
     } else {
       return Intent.NONE;
     }
@@ -104,7 +99,13 @@ const Dashboard = props => {
 
   useEffect(() => {
     getRecords({ params });
-  }, [params, getRecords]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [params]);
+
+  useEffect(() => {
+    getRecords({ params });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [count]);
 
   useEffect(() => {
     if (userParams.limit !== userCount && me.role === ROLES.ADMIN) {
@@ -196,11 +197,7 @@ const Dashboard = props => {
               : "";
 
           return `<tr class="${
-            me.role < ROLES.ADMIN
-              ? record.hour >= preferredWorkingHours
-                ? "success"
-                : "danger"
-              : "none"
+            record.hour >= preferredWorkingHours ? "success" : "danger"
           }">
                     <td>${index + 1}</td>
                     ${renderUserCol}

@@ -1,5 +1,5 @@
 const moment = require("moment");
-const { isInteger, assign, toNumber, sumBy, get } = require("lodash");
+const { isInteger, assign, toNumber, sumBy, get, extend } = require("lodash");
 const { Record, createValidate, updateValidate } = require("../models/record");
 const ObjectId = require("mongodb").ObjectID;
 const {
@@ -26,6 +26,20 @@ async function isOverHours(record) {
   return false;
 }
 
+async function totalHours(record) {
+  let where = {
+    date: record.date,
+    user: record.user
+  };
+
+  const records = await Record.find(where);
+  if (records.length) {
+    const totalHoursByDate = sumBy(records, "hour");
+    return totalHoursByDate;
+  }
+  return 0;
+}
+
 function isInvalidDate(from, to) {
   return (from && !moment(from).isValid()) || (to && !moment(to).isValid());
 }
@@ -40,7 +54,7 @@ async function list(req, res, next) {
 
     let where = {};
     if (req.user.role < Roles.ADMIN) {
-      where = { user: req.user._id };
+      where = { user: ObjectId(req.user._id) };
     }
 
     if (isInvalidDate(from, to)) {
@@ -77,8 +91,15 @@ async function list(req, res, next) {
     const records = await Record.find(where)
       .skip((page - 1) * limit)
       .limit(parseInt(limit))
-      .populate("user", "-password")
+      .populate("user", "-password -passwordConfirm")
       .sort("-date");
+
+    records.map(async record => {
+      record.totalHours = await totalHours(record);
+      record.save();
+      return record;
+    });
+
     const count = await Record.countDocuments(where);
 
     res.json({ records, count });
