@@ -14,6 +14,7 @@ const initialState = {
   users: [],
   user: null,
   count: 0,
+  loading: true,
   params: {
     page: 1,
     limit: 5
@@ -25,6 +26,7 @@ export default handleActions(
   {
     [SET_USER_PARAMS]: (state, { payload }) => ({
       ...state,
+      loading: true,
       params: {
         ...state.params,
         ...payload
@@ -32,16 +34,19 @@ export default handleActions(
     }),
     [Success(GET_USERS)]: (state, { payload }) => ({
       ...state,
+      loading: false,
       users: payload.users,
       count: payload.count,
       error: null
     }),
     [Fail(GET_USERS)]: (state, { payload }) => ({
       ...state,
+      loading: false,
       error: payload.data
     }),
     [Success(CREATE_USER)]: (state, { payload }) => ({
       ...state,
+      loading: false,
       user: payload,
       count: state.count + 1,
       error: null
@@ -49,6 +54,7 @@ export default handleActions(
     [Fail(CREATE_USER)]: (state, { payload }) => {
       return {
         ...state,
+        loading: false,
         error: payload.data,
         user: null
       };
@@ -60,6 +66,7 @@ export default handleActions(
 
       return {
         ...newState,
+        loading: false,
         user: payload,
         error: null
       };
@@ -67,12 +74,14 @@ export default handleActions(
     [Fail(UPDATE_USER)]: (state, { payload }) => {
       return {
         ...state,
+        loading: false,
         error: payload.data
       };
     },
     [Success(GET_USER)]: (state, { payload }) => {
       return {
         ...state,
+        loading: false,
         user: payload,
         error: null
       };
@@ -80,12 +89,14 @@ export default handleActions(
     [Fail(GET_USER)]: (state, { payload }) => {
       return {
         ...state,
+        loading: false,
         error: payload.data
       };
     },
     [Success(DEL_USER)]: state => {
       return {
         ...state,
+        loading: false,
         count: state.count - 1,
         error: null
       };
@@ -93,6 +104,7 @@ export default handleActions(
     [Fail(DEL_USER)]: (state, { payload }) => {
       return {
         ...state,
+        loading: false,
         error: payload.data
       };
     }

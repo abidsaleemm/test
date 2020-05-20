@@ -9,7 +9,14 @@ import {
   Elevation,
   Breadcrumb
 } from "@blueprintjs/core";
-import { Table, Column, Cell, RenderMode } from "@blueprintjs/table";
+import {
+  Table,
+  Column,
+  Cell,
+  RenderMode,
+  ColumnLoadingOption,
+  RowLoadingOption
+} from "@blueprintjs/table";
 import { upperFirst, toLower } from "lodash-es";
 import Header from "components/header";
 import { getUsers, setParams } from "store/actions/user";
@@ -19,7 +26,7 @@ import Pagination from "components/pagination";
 import { AddRow, EditRow, DeleteRow } from "components/user";
 
 const Users = props => {
-  const { users, getUsers, params, setParams, count, media } = props;
+  const { users, getUsers, params, setParams, count, media, loading } = props;
 
   const style = {
     card: {
@@ -76,6 +83,7 @@ const Users = props => {
                 cellRenderer={row => (
                   <Cell>{row + (params.page - 1) * params.limit + 1}</Cell>
                 )}
+                loadingOptions={loading ? ColumnLoadingOption.CELLS : null}
               />
               <Column
                 className={classNames(Classes.LARGE, "pt-1", "pl-2")}
@@ -87,6 +95,7 @@ const Users = props => {
                       : ""}
                   </Cell>
                 )}
+                loadingOptions={loading ? ColumnLoadingOption.CELLS : null}
               />
               <Column
                 className={Classes.LARGE}
@@ -94,6 +103,7 @@ const Users = props => {
                 cellRenderer={row => (
                   <Cell>{users[row] ? users[row].email : ""}</Cell>
                 )}
+                loadingOptions={loading ? ColumnLoadingOption.CELLS : null}
               />
               <Column
                 className={Classes.LARGE}
@@ -105,6 +115,7 @@ const Users = props => {
                       : ""}
                   </Cell>
                 )}
+                loadingOptions={loading ? ColumnLoadingOption.CELLS : null}
               />
               <Column
                 className={Classes.LARGE}
@@ -127,6 +138,7 @@ const Users = props => {
                     )}
                   </Cell>
                 )}
+                loadingOptions={loading ? ColumnLoadingOption.CELLS : null}
               />
             </Table>
             <Pagination
@@ -148,7 +160,8 @@ const mapStateToProps = state => ({
   params: state.user.params,
   count: state.user.count,
   user: state.user.user,
-  media: state.general.media
+  media: state.general.media,
+  loading: state.user.loading
 });
 
 const mapDispatchToProps = {

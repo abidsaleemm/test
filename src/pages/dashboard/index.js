@@ -325,14 +325,17 @@ const Dashboard = props => {
             >
               <Button
                 icon="export"
-                className={classNames(Classes.DARK)}
+                className={classNames(
+                  Classes.DARK,
+                  me.role < ROLES.ADMIN ? "mr-3" : "mr-0"
+                )}
                 onClick={handleExportRecords}
                 disabled={!records.length}
               >
                 {media !== "mobile" ? "Export records" : ""}
               </Button>
             </Tooltip>
-            {me.role < ROLES.ADMIN && <PreferredWorkingHours />}
+            {me.role < ROLES.ADMIN && <PreferredWorkingHours media={media} />}
           </div>
         </div>
         {!!records.length && (

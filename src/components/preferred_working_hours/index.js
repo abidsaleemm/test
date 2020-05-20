@@ -25,7 +25,7 @@ const validateSchema = Yup.object().shape({
 });
 
 const PreferredWorkingHours = props => {
-  const { updateProfile, me, showToast, getRecords, params } = props;
+  const { updateProfile, me, showToast, getRecords, params, media } = props;
   const [isOpen, toggleDialog] = useState(false);
 
   const handleSubmit = (values, actions) => {
@@ -58,7 +58,9 @@ const PreferredWorkingHours = props => {
         className={Classes.DARK}
         onClick={() => toggleDialog(true)}
       >
-        Update Preferred Working Hours ({me.preferredWorkingHours} hours)
+        {media === "desktop"
+          ? `Update Preferred Working Hours (${me.preferredWorkingHours} hours)`
+          : ""}
       </Button>
       <Dialog
         icon="edit"
