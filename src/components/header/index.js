@@ -13,7 +13,7 @@ import { showToast } from "store/actions/toast";
 import withToast from "hoc/withToast";
 
 const Header = props => {
-  const { signout, showToast } = props;
+  const { signout, showToast, media } = props;
   const [isOpen, toggleDialog] = useState(false);
 
   const role = useSelector(state => get(state, "auth.me.role", 0));
@@ -23,17 +23,32 @@ const Header = props => {
   return (
     <>
       <Navbar className={Classes.DARK}>
-        <Navbar.Group align={Alignment.LEFT}>
-          <Navbar.Heading
-            className="cursor-pointer"
-            onClick={() => {
-              history.push("/dashboard");
-            }}
-          >
-            Time Management
-          </Navbar.Heading>
-          <Navbar.Divider />
-        </Navbar.Group>
+        {media !== "mobile" && (
+          <Navbar.Group align={Alignment.LEFT}>
+            <Navbar.Heading
+              className="cursor-pointer"
+              onClick={() => {
+                history.push("/dashboard");
+              }}
+            >
+              Time Management
+            </Navbar.Heading>
+            <Navbar.Divider />
+          </Navbar.Group>
+        )}
+        {media === "mobile" && (
+          <Navbar.Group align={Alignment.LEFT}>
+            <Navbar.Heading className="cursor-pointer">
+              <Button
+                className={classNames(Classes.SMALL, Classes.MINIMAL)}
+                icon="time"
+                onClick={() => {
+                  history.push("/dashboard");
+                }}
+              />
+            </Navbar.Heading>
+          </Navbar.Group>
+        )}
         <Navbar.Group align={Alignment.RIGHT}>
           <Link
             className={classNames("mr-3", Classes.BUTTON, Classes.MINIMAL)}
@@ -74,6 +89,10 @@ const mapDispatchToProps = {
   showToast: showToast
 };
 
-export default compose(connect(() => ({}), mapDispatchToProps))(
+const mapStateToProps = state => ({
+  media: state.general.media
+});
+
+export default compose(connect(mapStateToProps, mapDispatchToProps))(
   withToast(Header)
 );

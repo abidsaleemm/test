@@ -109,8 +109,8 @@ export const USER_FIELDS = {
     large: true
   },
   passwordConfirm: {
-    label: "Password",
-    form_label: "Password",
+    label: "Confirm Password",
+    form_label: "Confirm Password",
     placeholder: "Password (Required)",
     id: "passwordConfirm",
     type: "password",

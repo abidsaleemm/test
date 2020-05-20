@@ -1,7 +1,7 @@
 module.exports = {
   Roles: { USER: 0, MANAGER: 1, ADMIN: 2 },
   unauthorized: {
-    message: "You are not authorized.",
+    message: "Permission denied.",
     code: 403
   },
   notFound: {

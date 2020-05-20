@@ -131,7 +131,7 @@ const ManageProfile = props => {
                       icon="edit"
                       intent={Intent.PRIMARY}
                       onClick={submitForm}
-                      text="Edit"
+                      text="Save"
                       className={Classes.DARK}
                     />
                   </div>

@@ -18,17 +18,17 @@ import withToast from "hoc/withToast";
 import Pagination from "components/pagination";
 import { AddRow, EditRow, DeleteRow } from "components/user";
 
-const style = {
-  card: {
-    width: "70%",
-    maxWidth: "100rem",
-    margin: "auto",
-    marginTop: "3rem"
-  }
-};
-
 const Users = props => {
-  const { users, getUsers, params, setParams, count } = props;
+  const { users, getUsers, params, setParams, count, media } = props;
+
+  const style = {
+    card: {
+      width: media !== "mobile" ? "70%" : "95%",
+      maxWidth: "100rem",
+      margin: "auto",
+      marginTop: "3rem"
+    }
+  };
 
   useEffect(() => {
     setParams({ page: 1, limit: 5 });
@@ -66,7 +66,7 @@ const Users = props => {
               className="my-3"
               numRows={users.length}
               defaultRowHeight={38}
-              columnWidths={[50, 158, 300, 200, 274, 200]}
+              columnWidths={[50, 208, 300, 200, 274, 272]}
               renderMode={RenderMode.NONE}
               enableRowHeader={false}
             >
@@ -147,7 +147,8 @@ const mapStateToProps = state => ({
   users: state.user.users,
   params: state.user.params,
   count: state.user.count,
-  user: state.user.user
+  user: state.user.user,
+  media: state.general.media
 });
 
 const mapDispatchToProps = {

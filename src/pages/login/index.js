@@ -33,7 +33,7 @@ const validateSchema = Yup.object().shape({
 });
 
 const SignIn = props => {
-  const { signin, showToast } = props;
+  const { signin, showToast, media } = props;
   const [showPassword, setShowPassword] = useState(false);
   const history = useHistory();
 
@@ -69,10 +69,11 @@ const SignIn = props => {
   return (
     <Card
       className={classNames(Classes.DARK, Classes.HOTKEY_COLUMN)}
-      interactive={true}
       elevation={Elevation.TWO}
-      style={{ width: "30rem" }}
+      style={{ width: media !== "mobile" ? "30rem" : "95%" }}
     >
+      <h2 className="text-center">Sign in to an account</h2>
+      <br />
       <Formik
         onSubmit={handleSubmit}
         initialValues={{ email: "", password: "" }}
@@ -159,7 +160,8 @@ SignIn.propTypes = {
 
 const mapStateToProps = state => ({
   auth: state.auth,
-  error: state.auth.error
+  error: state.auth.error,
+  media: state.general.media
 });
 
 const mapDispatchToProps = {

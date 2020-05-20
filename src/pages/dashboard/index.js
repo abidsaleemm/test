@@ -30,21 +30,6 @@ import { setParams, getRecords, generateRecords } from "store/actions/record";
 import withToast from "hoc/withToast";
 import { DATE_FORMAT, ROLES } from "constants/index";
 
-const style = {
-  card: {
-    width: "90%",
-    maxWidth: "100rem",
-    margin: "auto",
-    marginTop: "3rem"
-  },
-  cardChild: {
-    justifyContent: "space-between"
-  },
-  cell: {
-    padding: "0.3rem"
-  }
-};
-
 const Dashboard = props => {
   const {
     setParams,
@@ -57,13 +42,29 @@ const Dashboard = props => {
     getUsers,
     users,
     userCount,
-    generateRecords
+    generateRecords,
+    media
   } = props;
   const [startDate, updateStartDate] = useState(null);
   const [endDate, updateEndDate] = useState(null);
   const [selectedUsers, setSelectedUsers] = useState([]);
 
   const preferredWorkingHours = _.get(me, "preferredWorkingHours", 0);
+
+  const style = {
+    card: {
+      width: media !== "mobile" ? "90%" : "95%",
+      maxWidth: "100rem",
+      margin: "auto",
+      marginTop: "3rem"
+    },
+    cardChild: {
+      justifyContent: "space-between"
+    },
+    cell: {
+      padding: "0.3rem"
+    }
+  };
 
   const getColor = row => {
     if (row >= 0) {
@@ -225,6 +226,7 @@ const Dashboard = props => {
       : [...selectedUsers, item];
     setSelectedUsers(enhancedUsers);
     setParams({
+      page: 1,
       user: _.map(enhancedUsers, "_id")
     });
   };
@@ -234,6 +236,7 @@ const Dashboard = props => {
     clonedUsers.splice(index, 1);
     setSelectedUsers(clonedUsers);
     setParams({
+      page: 1,
       user: _.map(clonedUsers, "_id")
     });
   };
@@ -241,6 +244,7 @@ const Dashboard = props => {
   const handleClear = () => {
     setSelectedUsers([]);
     setParams({
+      page: 1,
       user: []
     });
   };
@@ -254,6 +258,34 @@ const Dashboard = props => {
         style={style.card}
       >
         <Breadcrumb icon="chevron-right" text="Records" disabled={true} />
+        <br />
+        {media === "mobile" && (
+          <ButtonGroup>
+            <DateRangeInput
+              allowSingleDayRange={true}
+              className="mt-2"
+              maxDate={new Date()}
+              value={[startDate, endDate]}
+              endInputProps={{ style: { width: "100px" } }}
+              startInputProps={{ style: { width: "100px" } }}
+              shortcuts={false}
+              closeOnSelection
+              onChange={handleChangeDateRange}
+              {...jsDateFormatter}
+            />
+            <Button
+              icon="cross"
+              className={classNames(
+                Classes.DARK,
+                "mr-3",
+                "mt-2",
+                Classes.MINIMAL
+              )}
+              onClick={removeRange}
+              intent={Intent.DANGER}
+            />
+          </ButtonGroup>
+        )}
         <div className={Classes.NAVBAR_GROUP} style={style.cardChild}>
           <AddRow />
 
@@ -267,21 +299,25 @@ const Dashboard = props => {
                 handleTagRemove={handleTagRemove}
               />
             )}
-            <DateRangeInput
-              allowSingleDayRange={true}
-              className="ml-3"
-              maxDate={new Date()}
-              value={[startDate, endDate]}
-              closeOnSelection
-              onChange={handleChangeDateRange}
-              {...jsDateFormatter}
-            />
-            <Button
-              icon="cross"
-              className={classNames(Classes.DARK, "mr-3", Classes.MINIMAL)}
-              onClick={removeRange}
-              intent={Intent.DANGER}
-            />
+            {media !== "mobile" && (
+              <ButtonGroup>
+                <DateRangeInput
+                  allowSingleDayRange={true}
+                  className="ml-3"
+                  maxDate={new Date()}
+                  value={[startDate, endDate]}
+                  closeOnSelection
+                  onChange={handleChangeDateRange}
+                  {...jsDateFormatter}
+                />
+                <Button
+                  icon="cross"
+                  className={classNames(Classes.DARK, "mr-3", Classes.MINIMAL)}
+                  onClick={removeRange}
+                  intent={Intent.DANGER}
+                />
+              </ButtonGroup>
+            )}
           </ButtonGroup>
           <div>
             <Tooltip
@@ -289,11 +325,11 @@ const Dashboard = props => {
             >
               <Button
                 icon="export"
-                className={classNames(Classes.DARK, "mr-3")}
+                className={classNames(Classes.DARK)}
                 onClick={handleExportRecords}
                 disabled={!records.length}
               >
-                Export records
+                {media !== "mobile" ? "Export records" : ""}
               </Button>
             </Tooltip>
             {me.role < ROLES.ADMIN && <PreferredWorkingHours />}
@@ -306,8 +342,8 @@ const Dashboard = props => {
               defaultRowHeight={38}
               columnWidths={
                 me.role < ROLES.ADMIN
-                  ? [50, 0, 200, 950, 150, 180]
-                  : [50, 200, 200, 750, 150, 180]
+                  ? [50, 0, 200, 950, 150, 210]
+                  : [50, 200, 200, 750, 150, 210]
               }
               renderMode={RenderMode.NONE}
               truncated={false}
@@ -415,7 +451,8 @@ const mapStateToProps = state => ({
   me: state.auth.me,
   userParams: state.user.params,
   users: state.user.users,
-  userCount: state.user.count
+  userCount: state.user.count,
+  media: state.general.media
 });
 
 const mapDispatchToProps = {

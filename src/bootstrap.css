@@ -537,3 +537,7 @@
 .pl-5 {
   padding-left: 3rem !important;
 }
+
+.text-center {
+  text-align: center;
+}

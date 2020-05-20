@@ -22,7 +22,7 @@ import withToast from "hoc/withToast";
 import { USER_FIELDS } from "constants/index";
 
 const SignUp = props => {
-  const { signup, showToast } = props;
+  const { signup, showToast, media } = props;
   const history = useHistory();
 
   const initialValue = {
@@ -72,10 +72,13 @@ const SignUp = props => {
     <>
       <Card
         className="bp3-dark transition"
-        interactive={true}
         elevation={Elevation.TWO}
-        style={{ width: "30rem", margin: "auto" }}
+        style={{ width: media !== "mobile" ? "30rem" : "95%", margin: "auto" }}
       >
+        <h2 className="text-center">
+          Welcome to your productivity origin story
+        </h2>
+        <br />
         <Formik
           onSubmit={handleSubmit}
           initialValues={initialValue}
@@ -148,4 +151,10 @@ const mapDispatchToProps = {
   showToast: showToast
 };
 
-export default compose(connect(null, mapDispatchToProps))(withToast(SignUp));
+const mapStateToProps = state => ({
+  media: state.general.media
+});
+
+export default compose(connect(mapStateToProps, mapDispatchToProps))(
+  withToast(SignUp)
+);
