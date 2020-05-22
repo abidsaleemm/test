@@ -230,9 +230,11 @@ async function generateRecords(req, res, next) {
           as: "user"
         }
       },
+      { $unset: "user.password" },
+      { $unset: "user.passwordConfirm" },
       {
         $group: {
-          _id: "$date",
+          _id: { user: "$user", date: "$date" },
           note: { $push: "$note" },
           hour: { $sum: "$hour" },
           user: { $first: "$user" }

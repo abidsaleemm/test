@@ -15,7 +15,7 @@ import {
   Cell,
   RenderMode,
   ColumnLoadingOption,
-  RowLoadingOption
+  SelectionModes
 } from "@blueprintjs/table";
 import { upperFirst, toLower } from "lodash-es";
 import Header from "components/header";
@@ -76,6 +76,7 @@ const Users = props => {
               columnWidths={[50, 208, 300, 200, 274, 272]}
               renderMode={RenderMode.NONE}
               enableRowHeader={false}
+              selectionModes={SelectionModes.NONE}
             >
               <Column
                 className={Classes.LARGE}

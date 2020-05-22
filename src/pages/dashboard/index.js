@@ -16,7 +16,13 @@ import {
   Tooltip,
   Breadcrumb
 } from "@blueprintjs/core";
-import { Table, Column, Cell, RenderMode } from "@blueprintjs/table";
+import {
+  Table,
+  Column,
+  Cell,
+  RenderMode,
+  SelectionModes
+} from "@blueprintjs/table";
 import { DateRangeInput } from "@blueprintjs/datetime";
 import moment from "moment";
 import Header from "components/header";
@@ -157,8 +163,7 @@ const Dashboard = props => {
             ? ` (Preferred Working Hours: <b>${preferredWorkingHours}</b> hours)`
             : "";
 
-        const content = [
-          `
+        let content = `
           <head>
             <title>Exported Results</title>
             <meta charset="utf-8">
@@ -182,39 +187,39 @@ const Dashboard = props => {
                   </tr>
                 </thead>
                 <tbody>
-            `
-        ];
+            `;
+        const bodyContents = records
+          .map((record, index) => {
+            const note = record.note.map(note => `<p>${note}</p>`).join("");
+            const renderUserCol =
+              me.role === ROLES.ADMIN
+                ? `<td>${_.get(record, "user.0.firstName", "") +
+                    " " +
+                    _.get(record, "user.0.lastName", "")}</td>`
+                : "";
 
-        const bodyContents = records.map((record, index) => {
-          const note = record.note.map(note => `<p>${note}</p>`).join("");
-          const renderUserCol =
-            me.role === ROLES.ADMIN
-              ? `<td>${_.get(record, "user.0.firstName", "") +
-                  " " +
-                  _.get(record, "user.0.lastName", "")}</td>`
-              : "";
-
-          return `<tr class="${
-            record.hour >= _.get(record, "user.0.preferredWorkingHours", 0)
-              ? "success"
-              : "danger"
-          }">
+            return `<tr class="${
+              record.hour >= _.get(record, "user.0.preferredWorkingHours", 0)
+                ? "success"
+                : "danger"
+            }">
                     <td>${index + 1}</td>
                     ${renderUserCol}
-                    <td>${moment(record._id).format(DATE_FORMAT)}</td>
+                    <td>${moment(record._id.date).format(DATE_FORMAT)}</td>
                     <td>${record.hour} hours</td>
                     <td>${note}</td>
                   </tr>`;
-        });
+          })
+          .join("");
 
-        content.push(bodyContents, [
+        content = content.concat(bodyContents, [
           ` </tbody>
             </table>
           </div>
         </body>`
         ]);
 
-        const blob = new Blob(content, { type: "text/html" });
+        const blob = new Blob([content], { type: "text/html" });
         download(blob, "Records_export.html", "text/html");
       }
     });
@@ -352,6 +357,7 @@ const Dashboard = props => {
               truncated={false}
               enableRowHeader={false}
               allowSelection={false}
+              selectionModes={SelectionModes.NONE}
             >
               <Column
                 className={Classes.LARGE}
